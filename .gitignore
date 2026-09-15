@@ -1,0 +1,17 @@
+/public/assets/**/*.js
+/public/assets/**/*.json
+/public/assets/**/*.css
+/public/assets/**/*.scss
+!/public/assets/css/styles.css
+!/public/assets/js/scripts.js
+/public/assets/**/*.woff*
+!/docs/index.md
+!/docs/sidebar.md
+/docs/
+/cache/
+/compiled/
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
+.php-cs-fixer.cache

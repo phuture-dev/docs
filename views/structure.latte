@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{$title} - {$app_name}</title>
+
+        <link rel="stylesheet" href="/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.css">
+        <link rel="stylesheet" href="/assets/css/styles.css">
+
+        <script src="/assets/js/scripts.js"></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary border-bottom" id="navbar">
+            <div class="container-fluid px-lg-4">
+                <button class="navbar-toggler border-0 me-2 d-lg-none" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#sidebar" aria-controls="sidebar" aria-expanded="false"
+                    aria-label="Toggle documentation navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <i class="bi bi-book"></i> {$app_name}
+                </a>
+
+                <button class="theme-toggle btn border-0 ms-auto d-flex align-items-center p-2 lh-1" type="button"
+                    id="theme-toggle" aria-label="Switch to the light theme">
+                    <i class="bi bi-sun-fill" aria-hidden="true"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <aside class="col-lg-3 col-xl-2 border-end px-lg-0">
+                    <div class="docs-sidebar collapse d-lg-block py-3 px-lg-3" id="sidebar">
+                        <div class="accordion accordion-flush">
+                            {foreach $sidebar as $item}
+                                {var $id = 'sidebar-group-' . $iterator->counter}
+
+                                {if $item['children']}
+                                    <div class="accordion-item bg-transparent border-0">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button bg-transparent shadow-none px-2 py-2 fw-semibold {if !$item['open']}collapsed{/if}"
+                                                    type="button" data-bs-toggle="collapse" data-bs-target="#{$id}" aria-controls="{$id}"
+                                                    aria-expanded="{if $item['open']}true{else}false{/if}">
+                                                {$item['label']}
+                                            </button>
+                                        </h2>
+
+                                        <div class="accordion-collapse collapse {if $item['open']}show{/if}" id="{$id}">
+                                            <div class="accordion-body p-0 pb-2">
+                                                {include links, items: $item['children']}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {else}
+                                    <div class="accordion-item bg-transparent border-0">
+                                        {include links, items: [$item]}
+                                    </div>
+                                {/if}
+                            {/foreach}
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="docs-content col-lg-9 col-xl-8 py-4 px-lg-5">
+                    {block content}{/block}
+                </main>
+            </div>
+        </div>
+
+        <script src="/assets/js/popper.js"></script>
+        <script src="/assets/js/bootstrap.js"></script>
+    </body>
+</html>
+
+{**
+ * Navigation links, nested as deep as the markdown goes
+ *}
+{define links, array $items}
+    <ul class="nav flex-column">
+        {foreach $items as $item}
+            <li class="nav-item">
+                <a class="nav-link px-2 py-1 {if $item['active']}active fw-semibold{else}link-body-emphasis{/if}"
+                    href="{$item['url']}" n:attr="aria-current: $item['active'] ? 'page'">
+                    {$item['label']}
+                </a>
+
+                {if $item['children']}
+                    <div class="ms-3">
+                        {include links, items: $item['children']}
+                    </div>
+                {/if}
+            </li>
+        {/foreach}
+    </ul>
+{/define}

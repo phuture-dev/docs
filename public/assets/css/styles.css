@@ -1,0 +1,489 @@
+:root {
+    --docs-accent: #1c88df;
+    --docs-accent-hover: #4fa4e9;
+    --docs-accent-text: var(--docs-accent);
+    --docs-accent-subtle: rgba(28, 136, 223, 0.10);
+    --docs-ink: #ededec;
+    --docs-text: #c5c4bf;
+    --docs-muted: #a1a09a;
+    --docs-surface: #121211;
+    --docs-surface-raised: #1a1a19;
+    --docs-surface-sunken: #222220;
+    --docs-border: #2c2c29;
+    --docs-border-strong: #3e3e3a;
+    --docs-code-bg: #1c1c1a;
+    --docs-code-color: #e6e6e3;
+    --docs-code-border: var(--docs-border);
+    --docs-inline-code-bg: #1c1c1a;
+    --docs-inline-code-border: #2c2c29;
+    --docs-inline-code-color: var(--docs-accent-text);
+    --docs-highlight-bg: #4a3f12;
+    --docs-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --docs-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --docs-navbar-height: 3.5rem;
+
+    /* Bootstrap, mapped once onto the tokens above */
+    --bs-body-bg: var(--docs-surface);
+    --bs-body-color: var(--docs-text);
+    --bs-body-font-family: var(--docs-sans);
+    --bs-body-font-size: 1rem;
+    --bs-body-line-height: 1.75;
+    --bs-emphasis-color: var(--docs-ink);
+    --bs-heading-color: var(--docs-ink);
+    --bs-secondary-color: var(--docs-muted);
+    --bs-secondary-bg: var(--docs-surface-sunken);
+    --bs-tertiary-bg: var(--docs-surface-raised);
+    --bs-border-color: var(--docs-border);
+    --bs-link-color: var(--docs-accent-text);
+    --bs-link-hover-color: var(--docs-accent-hover);
+    --bs-code-color: var(--docs-inline-code-color);
+    --bs-primary: var(--docs-accent);
+    --bs-highlight-bg: var(--docs-highlight-bg);
+    --bs-highlight-color: var(--docs-ink);
+    --bs-font-monospace: var(--docs-mono);
+    --bs-border-radius: 0.5rem;
+
+    /* Bootstrap, per theme, as neither a color triplet nor an icon can be derived */
+    --bs-body-bg-rgb: 18, 18, 17;
+    --bs-body-color-rgb: 197, 196, 191;
+    --bs-emphasis-color-rgb: 237, 237, 236;
+    --bs-link-color-rgb: 28, 136, 223;
+    --bs-primary-rgb: 28, 136, 223;
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23ededec' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23a1a09a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%231c88df' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+
+    color-scheme: dark;
+}
+
+/**
+ * Light, asked for through the theme toggle
+ */
+:root[data-bs-theme="light"] {
+    --docs-accent: #1c88df;
+    --docs-accent-hover: #1567ac;
+    --docs-accent-text: #1772bb;
+    --docs-accent-subtle: rgba(28, 136, 223, 0.09);
+    --docs-ink: #1b1b18;
+    --docs-text: #3f3f3a;
+    --docs-muted: #706f6c;
+    --docs-surface: #ffffff;
+    --docs-surface-raised: #fdfdfc;
+    --docs-surface-sunken: #f3f3f1;
+    --docs-border: #e3e3e0;
+    --docs-border-strong: #d3d3cd;
+    --docs-code-bg: #1b1b18;
+    --docs-code-color: #ededec;
+    --docs-code-border: transparent;
+    --docs-inline-code-bg: #f1f8fd;
+    --docs-inline-code-border: #d8e9f8;
+    --docs-inline-code-color: var(--docs-accent-text);
+    --docs-highlight-bg: #fdf2b8;
+
+    --bs-body-bg-rgb: 255, 255, 255;
+    --bs-body-color-rgb: 63, 63, 58;
+    --bs-emphasis-color-rgb: 27, 27, 24;
+    --bs-link-color-rgb: 23, 114, 187;
+    --bs-primary-rgb: 28, 136, 223;
+    --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%231b1b18' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    --bs-accordion-btn-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23706f6c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    --bs-accordion-btn-active-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%231c88df' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+
+    color-scheme: light;
+}
+
+/**
+ * Base
+ */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.011em;
+}
+
+::selection {
+    background-color: var(--docs-accent-subtle);
+}
+
+:focus-visible {
+    outline: 2px solid var(--docs-accent);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+/**
+ * Navbar
+ */
+.navbar {
+    --bs-navbar-padding-y: 0.875rem;
+    background-color: var(--docs-surface-raised) !important;
+    border-color: var(--docs-border) !important;
+}
+
+.navbar-brand {
+    color: var(--docs-ink);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.navbar-brand:hover {
+    color: var(--docs-accent);
+    text-decoration: none;
+}
+
+.navbar-brand .bi {
+    color: var(--docs-accent);
+}
+
+.theme-toggle {
+    --bs-btn-border-radius: 0.5rem;
+    color: var(--docs-muted);
+    background-color: transparent;
+    font-size: 1rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.theme-toggle:hover {
+    color: var(--docs-ink);
+    background-color: var(--bs-secondary-bg);
+}
+
+.theme-toggle:active {
+    color: var(--docs-accent);
+}
+
+/**
+ * Primary button, which Bootstrap paints from its own variables rather than --bs-primary
+ */
+.btn-primary {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: var(--docs-accent);
+    --bs-btn-border-color: var(--docs-accent);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #1874be;
+    --bs-btn-hover-border-color: #1874be;
+    --bs-btn-focus-shadow-rgb: 28, 136, 223;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #166db2;
+    --bs-btn-active-border-color: #1566a7;
+    --bs-btn-disabled-color: #ffffff;
+    --bs-btn-disabled-bg: var(--docs-accent);
+    --bs-btn-disabled-border-color: var(--docs-accent);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--docs-accent-text);
+    --bs-btn-border-color: var(--docs-accent);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: var(--docs-accent);
+    --bs-btn-hover-border-color: var(--docs-accent);
+    --bs-btn-focus-shadow-rgb: 28, 136, 223;
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #1874be;
+    --bs-btn-active-border-color: #1874be;
+    --bs-btn-disabled-color: var(--docs-accent-text);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--docs-accent);
+}
+
+/**
+ * Sidebar
+ */
+.docs-sidebar {
+    font-size: 0.9375rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--docs-border-strong) transparent;
+}
+
+aside {
+    border-color: var(--docs-border) !important;
+}
+
+@media (min-width: 992px) {
+    .docs-sidebar {
+        position: sticky;
+        top: var(--docs-navbar-height);
+        height: calc(100vh - var(--docs-navbar-height));
+        overflow-y: auto;
+    }
+}
+
+.docs-sidebar .accordion-button {
+    color: var(--docs-ink);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.5rem;
+}
+
+.docs-sidebar .accordion-button:not(.collapsed) {
+    color: var(--docs-ink);
+    background-color: transparent;
+}
+
+.docs-sidebar .accordion-button::after {
+    width: 0.875rem;
+    height: 0.875rem;
+    background-size: 0.875rem;
+}
+
+.docs-sidebar .nav-link {
+    color: var(--docs-muted);
+    border-left: 2px solid transparent;
+    border-radius: 0;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.docs-sidebar .nav-link:hover {
+    color: var(--docs-ink);
+    text-decoration: none;
+}
+
+.docs-sidebar .nav-link.active {
+    color: var(--docs-accent-text);
+    border-left-color: var(--docs-accent);
+    background-color: var(--docs-accent-subtle);
+}
+
+/**
+ * Page content
+ */
+.docs-content {
+    min-height: calc(100vh - var(--docs-navbar-height));
+}
+
+.docs-content article {
+    max-width: 45rem;
+}
+
+.docs-content h1,
+.docs-content h2,
+.docs-content h3,
+.docs-content h4,
+.docs-content h5,
+.docs-content h6 {
+    color: var(--docs-ink);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+    scroll-margin-top: calc(var(--docs-navbar-height, 3.5rem) + 1.5rem);
+}
+
+/**
+ * Permalink of a heading, waiting in the margin until the heading is pointed at
+ */
+.docs-content .heading-permalink {
+    float: left;
+    width: 1em;
+    margin-left: -1em;
+    color: var(--docs-muted);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.docs-content :is(h1, h2, h3, h4, h5, h6):hover .heading-permalink,
+.docs-content .heading-permalink:focus-visible {
+    opacity: 1;
+}
+
+.docs-content .heading-permalink:hover {
+    color: var(--docs-accent);
+    text-decoration: none;
+}
+
+/* Nothing hovers on a touch screen, and the margin is too tight to hide it in */
+@media (max-width: 991.98px) {
+    .docs-content .heading-permalink {
+        float: none;
+        width: auto;
+        margin-left: 0;
+        margin-right: 0.35em;
+        opacity: 0.4;
+    }
+}
+
+.docs-content h1 {
+    margin-bottom: 1.5rem;
+    font-size: 2.25rem;
+}
+
+.docs-content h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.625rem;
+}
+
+.docs-content h3 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.docs-content h4,
+.docs-content h5,
+.docs-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.0625rem;
+}
+
+.docs-content p,
+.docs-content ul,
+.docs-content ol {
+    margin-bottom: 1.25rem;
+}
+
+.docs-content li+li {
+    margin-top: 0.375rem;
+}
+
+.docs-content li>ul,
+.docs-content li>ol {
+    margin-top: 0.375rem;
+    margin-bottom: 0;
+}
+
+.docs-content li::marker {
+    color: var(--docs-muted);
+}
+
+.docs-content strong {
+    color: var(--docs-ink);
+    font-weight: 600;
+}
+
+.docs-content hr {
+    margin: 3rem 0;
+    border-color: var(--docs-border);
+    opacity: 1;
+}
+
+.docs-content hr+h1,
+.docs-content hr+h2,
+.docs-content hr+h3,
+.docs-content hr+h4,
+.docs-content hr+h5 {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.docs-content img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--docs-border);
+    border-radius: 0.5rem;
+}
+
+/**
+ * Code
+ */
+.docs-content :not(pre)>code {
+    padding: 0.15em 0.4em;
+    background-color: var(--docs-inline-code-bg);
+    border: 1px solid var(--docs-inline-code-border);
+    border-radius: 0.3rem;
+    color: var(--docs-inline-code-color);
+    font-size: 0.875em;
+    word-break: break-word;
+}
+
+.docs-content a>code {
+    color: inherit;
+}
+
+.docs-content pre {
+    margin-bottom: 1.5rem;
+    padding: 1.125rem 1.25rem;
+    background-color: var(--docs-code-bg);
+    border: 1px solid var(--docs-code-border);
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--docs-border-strong) transparent;
+}
+
+.docs-content pre code {
+    color: var(--docs-code-color);
+    font-family: var(--docs-mono);
+    font-size: 0.875rem;
+    line-height: 1.7;
+    tab-size: 4;
+}
+
+/**
+ * Tables
+ */
+.docs-content .table-responsive,
+.docs-content table {
+    margin-bottom: 1.5rem;
+}
+
+.docs-content table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+.docs-content th,
+.docs-content td {
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--docs-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.docs-content thead th {
+    border-bottom: 2px solid var(--docs-border-strong);
+    color: var(--docs-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.docs-content th:first-child,
+.docs-content td:first-child {
+    padding-left: 0;
+}
+
+/**
+ * Notes, written as blockquotes
+ */
+.docs-content blockquote {
+    margin: 1.75rem 0;
+    padding: 1rem 1.25rem;
+    background-color: var(--docs-accent-subtle);
+    border-left: 3px solid var(--docs-accent);
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: var(--bs-body-color);
+}
+
+.docs-content blockquote> :last-child {
+    margin-bottom: 0;
+}
+
+/**
+ * Task lists, which markdown renders as bare checkboxes
+ */
+.docs-content li:has(> input[type="checkbox"]) {
+    list-style: none;
+}
+
+.docs-content li > input[type="checkbox"] {
+    margin-right: 0.5rem;
+    accent-color: var(--docs-accent);
+}

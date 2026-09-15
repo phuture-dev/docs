@@ -1,0 +1,17 @@
+[
+  {
+    "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/WORKFLOW.md",
+    "destination": "/",
+    "type": "doc"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/README.md",
+    "destination": "coherence/",
+    "type": "doc"
+  },
+  {
+    "source": "https://raw.githubusercontent.com/phuture-dev/continuum/refs/heads/main/README.md",
+    "destination": "continuum/",
+    "type": "doc"
+  }
+]

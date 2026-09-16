@@ -1,0 +1,132 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Run every command whose schedule has come around
+ *
+ * Meant to be called by cron as often as the shortest schedule any command
+ * keeps, leaving each command to decide whether its own turn has come:
+ *
+ *   * * * * * /usr/bin/php /path/to/bin/cron
+ *
+ * Usage:
+ *   bin/cron              run the commands that are due
+ *   bin/cron --force      run every command, whatever its schedule says
+ *   bin/cron --verbose    say something about the commands that are not due too
+ */
+
+use League\CLImate\CLImate;
+use Phuture\App\Command;
+
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+/**
+ * Define the same environment constants the application is served under
+ */
+define('DS', DIRECTORY_SEPARATOR);
+define('VIEWS_DIR', dirname(__DIR__) . DS . 'views' . DS);
+define('CACHE_DIR', dirname(__DIR__) . DS . 'cache' . DS);
+define('DOCS_DIR', dirname(__DIR__) . DS . 'docs' . DS);
+
+/**
+ * Load configuration files
+ *
+ * Routes say how a request is answered, which a run from the terminal never
+ * does, and registering them asks for an application routed for HTTP.
+ */
+foreach (glob(__DIR__ . '/../config/*.php') as $config) {
+    if (basename($config) !== 'routes.php') {
+        require_once $config;
+    }
+}
+
+/**
+ * Every command of the application, in the order they are placed
+ *
+ * @return array
+ */
+function commands(): array
+{
+    $commands = [];
+
+    foreach ((array) glob(__DIR__ . DS . '..' . DS . 'app' . DS . 'Command' . DS . '*.php') as $file) {
+        $class = 'Phuture\\App\\Command\\' . basename($file, '.php');
+
+        // The folder is where commands live, but only a class that is one can be run
+        if (!class_exists($class) || !is_subclass_of($class, Command::class)) {
+            continue;
+        }
+
+        if (!(new ReflectionClass($class))->isAbstract()) {
+            $commands[] = $class;
+        }
+    }
+
+    // A command reading what another brings in has to run after it, whatever their names read like
+    usort($commands, fn ($a, $b) => [$a::order(), $a] <=> [$b::order(), $b]);
+
+    return $commands;
+}
+
+$climate = new CLImate();
+$arguments = array_slice($argv, 1);
+$force = in_array('--force', $arguments, true);
+$verbose = in_array('--verbose', $arguments, true);
+
+if (!is_dir(CACHE_DIR) && !@mkdir(CACHE_DIR, 0775, true) && !is_dir(CACHE_DIR)) {
+    $climate->to('error')->error('The cache directory could not be created.');
+
+    exit(1);
+}
+
+/**
+ * Hold a lock for the whole run
+ *
+ * Two runs at once would download into the same destinations and clear them
+ * from under one another, which a run taking longer than its interval invites.
+ */
+$lock = @fopen(CACHE_DIR . 'cron.lock', 'c');
+
+if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
+    $verbose && $climate->comment('Another run is still going, leaving this one to it.');
+
+    exit(0);
+}
+
+$failed = [];
+
+foreach (commands() as $command) {
+    $name = (new ReflectionClass($command))->getShortName();
+
+    if (!$force && !$command::timeToRun()) {
+        $next = $command::nextRun();
+
+        // Cron mails whatever a run says, so a run with nothing to do says nothing
+        $verbose && $climate->out(
+            '<dim>' . $name . ' is not due' . ($next === null ? '' : ' until ' . date('Y-m-d H:i', $next)) . '</dim>'
+        );
+
+        continue;
+    }
+
+    $climate->out('<bold>' . $name . '</bold>');
+
+    if ($command::run() !== 0) {
+        $failed[] = $name;
+    }
+}
+
+flock($lock, LOCK_UN);
+fclose($lock);
+
+if ($failed !== []) {
+    $climate->to('error')->error('Failed: ' . implode(', ', $failed) . '.');
+
+    exit(1);
+}
+
+exit(0);

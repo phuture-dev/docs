@@ -2,10 +2,13 @@
     "require": {
         "php": "^8.4",
         "ext-dom": "*",
+        "ext-zip": "*",
+        "ext-tokenizer": "*",
         "popphp/popphp": "^v5.0.0",
         "latte/latte": "^v3.1.0",
         "league/commonmark": "^2.10",
-        "league/climate": "^3.12"
+        "league/climate": "^3.12",
+        "milo/github-api": "^2.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",
@@ -17,7 +20,11 @@
         }
     },
     "scripts": {
-        "lint": ["@phpcbf", "php-cs-fixer fix"],
+        "lint": [
+            "@phpcbf",
+            "php-cs-fixer fix"
+        ],
+        "cron": "php bin/cron",
         "server": "php -S localhost:8000",
         "phpcbf": "phpcbf -n --standard=PSR12 app/ || true"
     },

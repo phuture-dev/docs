@@ -255,6 +255,107 @@ aside {
 }
 
 /**
+ * Toggle of a nested navigation entry, turned on its side while its section is folded away
+ */
+.docs-sidebar .sidebar-toggle {
+    --bs-btn-border-radius: 0.375rem;
+    flex: 0 0 auto;
+    color: var(--docs-muted);
+    background-color: transparent;
+    font-size: 0.75rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.docs-sidebar .sidebar-toggle:hover {
+    color: var(--docs-ink);
+    background-color: var(--bs-secondary-bg);
+}
+
+.docs-sidebar .sidebar-toggle i {
+    display: block;
+    transition: transform 0.2s ease-in-out;
+}
+
+.docs-sidebar .sidebar-toggle.collapsed i {
+    transform: rotate(-90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .docs-sidebar .sidebar-toggle i {
+        transition: none;
+    }
+}
+
+/**
+ * Table of contents, lifted out of the page into the margin beside it
+ */
+.docs-toc {
+    display: none;
+}
+
+.docs-toc-title {
+    margin-bottom: 0.75rem;
+    color: var(--docs-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.docs-toc ol,
+.docs-toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.docs-toc ol ol,
+.docs-toc ol ul {
+    padding-left: 0.75rem;
+}
+
+.docs-toc a {
+    display: block;
+    padding: 0.25rem 0 0.25rem 0.75rem;
+    border-left: 2px solid var(--docs-border);
+    color: var(--docs-muted);
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.docs-toc a:hover {
+    border-left-color: var(--docs-border-strong);
+    color: var(--docs-ink);
+    text-decoration: none;
+}
+
+.docs-toc a.is-current {
+    border-left-color: var(--docs-accent);
+    color: var(--docs-accent-text);
+    font-weight: 600;
+}
+
+/* There is only room for it once the grid leaves a column free, at xl */
+@media (min-width: 1200px) {
+    .docs-toc.is-visible {
+        display: block;
+        position: sticky;
+        top: var(--docs-navbar-height);
+        max-height: calc(100vh - var(--docs-navbar-height));
+        padding: 1.75rem 0 2rem;
+        overflow-y: auto;
+        font-size: 0.875rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--docs-border-strong) transparent;
+    }
+
+    /* The copy in the margin stands in for the one written in the document */
+    .docs-toc-source {
+        display: none;
+    }
+}
+
+/**
  * Page content
  */
 .docs-content {

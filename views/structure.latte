@@ -53,13 +53,13 @@
 
                                         <div class="accordion-collapse collapse {if $item['open']}show{/if}" id="{$id}">
                                             <div class="accordion-body p-0 pb-2">
-                                                {include links, items: $item['children']}
+                                                {include links, items: $item['children'], prefix: $id}
                                             </div>
                                         </div>
                                     </div>
                                 {else}
                                     <div class="accordion-item bg-transparent border-0">
-                                        {include links, items: [$item]}
+                                        {include links, items: [$item], prefix: $id}
                                     </div>
                                 {/if}
                             {/foreach}
@@ -70,6 +70,11 @@
                 <main class="docs-content col-lg-9 col-xl-8 py-4 px-lg-5">
                     {block content}{/block}
                 </main>
+
+                {**
+                 * Filled in by scripts.js with the table of contents the page carries, when it has one
+                 *}
+                <aside class="docs-toc col-xl-2" id="toc"></aside>
             </div>
         </div>
 
@@ -80,19 +85,35 @@
 
 {**
  * Navigation links, nested as deep as the markdown goes
+ *
+ * Every entry holding children folds away behind its own toggle, and is left
+ * open when the page being served sits somewhere inside it.
  *}
-{define links, array $items}
+{define links, array $items, string $prefix}
     <ul class="nav flex-column">
         {foreach $items as $item}
+            {var $id = $prefix . '-' . $iterator->counter}
+
             <li class="nav-item">
-                <a class="nav-link px-2 py-1 {if $item['active']}active fw-semibold{else}link-body-emphasis{/if}"
-                    href="{$item['url']}" n:attr="aria-current: $item['active'] ? 'page'">
-                    {$item['label']}
-                </a>
+                <div class="d-flex align-items-center">
+                    <a class="nav-link flex-grow-1 px-2 py-1 {if $item['active']}active fw-semibold{else}link-body-emphasis{/if}"
+                        href="{$item['url']}" n:attr="aria-current: $item['active'] ? 'page'">
+                        {$item['label']}
+                    </a>
+
+                    {if $item['children']}
+                        <button class="sidebar-toggle btn border-0 p-1 lh-1 {if !$item['open']}collapsed{/if}"
+                            type="button" data-bs-toggle="collapse" data-bs-target="#{$id}" aria-controls="{$id}"
+                            aria-expanded="{if $item['open']}true{else}false{/if}"
+                            aria-label="Toggle the {$item['label']} section">
+                            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                        </button>
+                    {/if}
+                </div>
 
                 {if $item['children']}
-                    <div class="ms-3">
-                        {include links, items: $item['children']}
+                    <div class="collapse ms-3 {if $item['open']}show{/if}" id="{$id}">
+                        {include links, items: $item['children'], prefix: $id}
                     </div>
                 {/if}
             </li>

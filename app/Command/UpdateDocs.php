@@ -2,16 +2,11 @@
 
 namespace Phuture\App\Command;
 
-use Throwable;
-use League\CLImate\CLImate;
+use Phuture\App\Command;
+use Phuture\App\Enum\Schedule;
 
-class UpdateDocs
+class UpdateDocs extends Command
 {
-    /**
-     * File the sources are read from, relative to the project root
-     */
-    public const SOURCE_FILE = 'source.json';
-
     /**
      * Type of entry this command takes care of
      */
@@ -23,14 +18,23 @@ class UpdateDocs
     protected const STAGING_DIRECTORY = '.update-docs';
 
     /**
+     * How often this command may run
+     *
+     * A single document is a cheap thing to fetch, so it is kept close to its source.
+     */
+    protected const SCHEDULE = Schedule::HOURLY;
+
+    /**
+     * Place this command takes in a run
+     *
+     * Single documents are brought in once the workspace is clear.
+     */
+    protected const ORDER = 20;
+
+    /**
      * Seconds a single download is given before it is given up on
      */
     protected const TIMEOUT = 30;
-
-    /**
-     * Console shared by every message of this run
-     */
-    private static ?CLImate $climate = null;
 
     /**
      * Update every document listed in the source file
@@ -62,12 +66,9 @@ class UpdateDocs
             return self::abort('The staging directory could not be created.');
         }
 
-        // A progress bar redraws itself with control characters, which only belong on a terminal
-        $progress = defined('STDOUT') && stream_isatty(STDOUT)
-            ? self::climate()->progress()->total(count($entries))
-            : null;
-
+        $progress = self::progress(count($entries));
         $downloaded = [];
+        $directories = [];
 
         foreach ($entries as $index => $entry) {
             $progress?->current($index, 'Downloading ' . $entry['source']);
@@ -78,6 +79,18 @@ class UpdateDocs
                 return self::abort('Entry ' . $index . ' points at a destination outside the documentation.', $staging);
             }
 
+            if (self::hidden($entry['destination']) || self::hidden(basename($destination))) {
+                return self::abort('Entry ' . $index . ' names a hidden document, which has no url to be served at.', $staging);
+            }
+
+            if (!self::supported($destination)) {
+                return self::abort(
+                    'Entry ' . $index . ' names a document the documentation is not made of, which is one of '
+                    . implode(', ', self::EXTENSIONS) . '.',
+                    $staging
+                );
+            }
+
             $file = $staging . DIRECTORY_SEPARATOR . $index . '-' . basename($destination);
 
             if (!self::download($entry['source'], $file)) {
@@ -85,11 +98,17 @@ class UpdateDocs
             }
 
             $downloaded[$file] = $destination;
+            $directories[] = dirname($destination);
         }
 
         $progress?->current(count($entries), 'Downloaded');
 
-        // Every download is in, so the documents can be put in place
+        // Every download is in, so whatever the destinations were holding can go
+        if (!self::clear($directories)) {
+            return self::abort('A destination could not be cleared, the documentation may be incomplete.', $staging);
+        }
+
+        // The destinations are empty, so the documents can be put in place
         foreach ($downloaded as $file => $destination) {
             if (!self::install($file, $destination)) {
                 return self::abort('Moving ' . basename($destination) . ' into place failed.', $staging);
@@ -99,48 +118,9 @@ class UpdateDocs
         }
 
         self::remove($staging);
+        self::ran();
 
         return 0;
-    }
-
-    /**
-     * Entries of the source file this command takes care of, or null when the file cannot be used
-     *
-     * @param string $path Path of the source file
-     * @return array|null
-     */
-    protected static function entries(string $path): ?array
-    {
-        if (!is_file($path) || !is_readable($path)) {
-            return null;
-        }
-
-        try {
-            $sources = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
-        } catch (Throwable) {
-            return null;
-        }
-
-        if (!is_array($sources)) {
-            return null;
-        }
-
-        $entries = [];
-
-        foreach ($sources as $source) {
-            if (!is_array($source) || ($source['type'] ?? null) !== self::TYPE) {
-                continue;
-            }
-
-            // An entry without both ends of the move has nothing to say
-            if (!is_string($source['source'] ?? null) || !is_string($source['destination'] ?? null)) {
-                continue;
-            }
-
-            $entries[] = ['source' => $source['source'], 'destination' => $source['destination']];
-        }
-
-        return $entries;
     }
 
     /**
@@ -287,146 +267,5 @@ class UpdateDocs
         fclose($source);
 
         return $copied !== false;
-    }
-
-    /**
-     * Move a downloaded document to where it belongs, over whatever is already there
-     *
-     * @param string $file Path of the downloaded file
-     * @param string $destination Path the document belongs at
-     * @return bool
-     */
-    protected static function install(string $file, string $destination): bool
-    {
-        $directory = dirname($destination);
-
-        if (!is_dir($directory) && !@mkdir($directory, 0775, true) && !is_dir($directory)) {
-            return false;
-        }
-
-        // A rename within one filesystem swaps the document in without a moment of it being half written
-        if (@rename($file, $destination)) {
-            return true;
-        }
-
-        // Another filesystem, so the copy is made next to the destination and swapped in from there
-        $temporary = $destination . '.' . uniqid() . '.part';
-
-        if (!@copy($file, $temporary)) {
-            return false;
-        }
-
-        if (!@rename($temporary, $destination)) {
-            @unlink($temporary);
-
-            return false;
-        }
-
-        @unlink($file);
-
-        return true;
-    }
-
-    /**
-     * Staging directory of this run, or null when it cannot be created
-     *
-     * It sits next to the documentation rather than in the system temp folder,
-     * so that moving a document into place stays within one filesystem.
-     *
-     * @return string|null
-     */
-    protected static function staging(): ?string
-    {
-        $path = self::root() . self::STAGING_DIRECTORY . '-' . uniqid();
-
-        if (!@mkdir($path, 0775, true) && !is_dir($path)) {
-            return null;
-        }
-
-        return $path;
-    }
-
-    /**
-     * Delete a directory and everything left in it
-     *
-     * @param string $path Path of the directory
-     * @return void
-     */
-    protected static function remove(string $path): void
-    {
-        if (!is_dir($path)) {
-            return;
-        }
-
-        foreach ((array) scandir($path) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $child = $path . DIRECTORY_SEPARATOR . $file;
-
-            is_dir($child) ? self::remove($child) : @unlink($child);
-        }
-
-        @rmdir($path);
-    }
-
-    /**
-     * Root of the project, with a trailing separator
-     *
-     * @return string
-     */
-    protected static function root(): string
-    {
-        return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * Folder the documentation lives in, with a trailing separator
-     *
-     * @return string
-     */
-    protected static function docs(): string
-    {
-        return defined('DOCS_DIR') ? DOCS_DIR : self::root() . 'docs' . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * Path as it reads from the project root, for the sake of the output
-     *
-     * @param string $path Path to shorten
-     * @return string
-     */
-    protected static function relative(string $path): string
-    {
-        return str_starts_with($path, self::root()) ? substr($path, strlen(self::root())) : $path;
-    }
-
-    /**
-     * Console every message of this run is written through
-     *
-     * @return CLImate
-     */
-    protected static function climate(): CLImate
-    {
-        return self::$climate ??= new CLImate();
-    }
-
-    /**
-     * Report what went wrong, clear away the staging directory, and hand back the exit code to leave with
-     *
-     * @param string $message Message to report
-     * @param string|null $staging Staging directory of the run, when there is one to clear away
-     * @return int
-     */
-    protected static function abort(string $message, ?string $staging = null): int
-    {
-        if ($staging !== null) {
-            self::remove($staging);
-        }
-
-        self::climate()->to('error')->error($message);
-
-        return 1;
     }
 }

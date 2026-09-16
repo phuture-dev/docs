@@ -8,6 +8,7 @@ use League\CommonMark\Node\Inline\Newline;
 use League\CommonMark\Parser\MarkdownParser;
 use League\CommonMark\Renderer\HtmlDecorator;
 use League\CommonMark\Environment\Environment;
+use League\CommonMark\Node\Block\AbstractBlock;
 use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
@@ -189,7 +190,7 @@ class Markdown
         $document = self::resolve($parts[1]);
 
         // Whatever the link carries past the file is kept, so it lands where it was aimed
-        return $document === null ? null : self::pageUrl($document) . $parts[2];
+        return $document === null ? null : Document::url($document) . $parts[2];
     }
 
     /**
@@ -218,25 +219,6 @@ class Markdown
         return Document::find($directory, [basename($path)]);
     }
 
-    /**
-     * Url a document inside the documentation is served under
-     *
-     * @param string $document Path of the document
-     * @return string
-     */
-    protected static function pageUrl(string $document): string
-    {
-        $root = rtrim((string) realpath(DOCS_DIR), DS);
-        $segments = explode(DS, trim(substr($document, strlen($root)), DS));
-        $name = strtolower(pathinfo((string) array_pop($segments), PATHINFO_FILENAME));
-
-        // A folder is served by the document inside it, which is left off its url
-        if (!in_array($name, Document::DEFAULT_NAMES, true)) {
-            $segments[] = $name;
-        }
-
-        return '/' . implode('/', $segments);
-    }
 
     /**
      * Parse markdown into its syntax tree, or null when it cannot be parsed
@@ -298,6 +280,40 @@ class Markdown
         $title = Document::shorten(strtok(self::text($paragraph), "\n") ?: '', $length);
 
         return $title !== '' ? $title : null;
+    }
+
+    /**
+     * Contents of a markdown file as plain text, or null when it cannot be read or parsed
+     *
+     * @param string $path Path of the markdown file
+     * @return string|null
+     */
+    public static function plain(string $path): ?string
+    {
+        $markdown = Document::contents($path);
+        $document = $markdown === null ? null : self::parse($markdown);
+
+        if ($document === null) {
+            return null;
+        }
+
+        $text = '';
+
+        // Every block opens a line of its own, so that a heading is never read
+        // as the first word of the paragraph underneath it
+        foreach ($document->iterator() as $node) {
+            if ($node instanceof AbstractBlock) {
+                $text .= "\n";
+            }
+
+            if ($node instanceof StringContainerInterface) {
+                $text .= $node->getLiteral();
+            } elseif ($node instanceof Newline) {
+                $text .= ' ';
+            }
+        }
+
+        return trim($text);
     }
 
     /**

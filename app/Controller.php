@@ -75,6 +75,21 @@ class Controller extends AbstractController
     }
 
     /**
+     * Answer with json rather than a page, for whatever on the page is asking
+     *
+     * @param array $data Data to answer with
+     * @return void
+     */
+    protected static function renderJson(array $data): void
+    {
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=utf-8');
+        }
+
+        echo (string) json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
      * Send the 404 page, or nothing but the status code when that view is unusable too
      *
      * @return void

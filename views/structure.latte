@@ -26,7 +26,26 @@
                     <i class="bi bi-book"></i> {$app_name}
                 </a>
 
-                <button class="theme-toggle btn border-0 ms-auto d-flex align-items-center p-2 lh-1" type="button"
+                {**
+                 * Answered by the search page on its own, and by the script with a list
+                 * of suggestions under it where the browser can fetch them
+                 *}
+                <form class="docs-search ms-auto me-2" action="/search" method="get" role="search" id="search">
+                    <div class="docs-search-field">
+                        <i class="bi bi-search docs-search-icon" aria-hidden="true"></i>
+
+                        <input class="form-control" type="search" name="q" value="{$query ?? ''}"
+                            placeholder="Search" aria-label="Search the documentation" id="search-input"
+                            autocomplete="off" role="combobox" aria-expanded="false" aria-controls="search-results"
+                            aria-autocomplete="list">
+
+                        <kbd class="docs-search-key" aria-hidden="true">/</kbd>
+                    </div>
+
+                    <div class="docs-search-suggestions" id="search-results" role="listbox" hidden></div>
+                </form>
+
+                <button class="theme-toggle btn border-0 d-flex align-items-center p-2 lh-1" type="button"
                     id="theme-toggle" aria-label="Switch to the light theme">
                     <i class="bi bi-sun-fill" aria-hidden="true"></i>
                 </button>

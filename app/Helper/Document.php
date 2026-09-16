@@ -20,6 +20,11 @@ class Document
     public const DEFAULT_NAMES = ['index', 'readme'];
 
     /**
+     * Names of the documents that drive the site rather than being pages of it
+     */
+    public const PROTECTED_NAMES = ['sidebar'];
+
+    /**
      * Contents of the files read so far, keyed by path
      */
     private static array $contents = [];
@@ -125,6 +130,41 @@ class Document
             'html' => Html::title($path, $length),
             default => null,
         };
+    }
+
+    /**
+     * Contents of a document as plain text, or null when it cannot be read or parsed
+     *
+     * @param string $path Path of the document
+     * @return string|null
+     */
+    public static function plain(string $path): ?string
+    {
+        return match (self::extension($path)) {
+            'md' => Markdown::plain($path),
+            'html' => Html::plain($path),
+            default => null,
+        };
+    }
+
+    /**
+     * Url a document inside the documentation is served under
+     *
+     * @param string $path Path of the document
+     * @return string
+     */
+    public static function url(string $path): string
+    {
+        $root = rtrim((string) realpath(DOCS_DIR), DS);
+        $segments = explode(DS, trim(substr($path, strlen($root)), DS));
+        $name = strtolower(pathinfo((string) array_pop($segments), PATHINFO_FILENAME));
+
+        // A folder is served by the document inside it, which is left off its url
+        if (!in_array($name, self::DEFAULT_NAMES, true)) {
+            $segments[] = $name;
+        }
+
+        return '/' . implode('/', $segments);
     }
 
     /**

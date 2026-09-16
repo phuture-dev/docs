@@ -7,11 +7,6 @@ use Phuture\App\{Controller, Helper\Document};
 class Docs extends Controller
 {
     /**
-     * Documents that drive the site rather than being pages of it
-     */
-    protected const PROTECTED_DOCUMENTS = ['sidebar'];
-
-    /**
      * Render any page of the docs folder
      *
      * @param string|array $page Url segments below the docs folder
@@ -51,7 +46,7 @@ class Docs extends Controller
             ? Document::find($path, Document::fileNames(Document::DEFAULT_NAMES))
             : Document::find(dirname($path), Document::fileNames($name));
 
-        if (in_array(strtolower(pathinfo((string) $document, PATHINFO_FILENAME)), self::PROTECTED_DOCUMENTS, true)) {
+        if (in_array(strtolower(pathinfo((string) $document, PATHINFO_FILENAME)), Document::PROTECTED_NAMES, true)) {
             return null;
         }
 

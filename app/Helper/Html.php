@@ -37,6 +37,25 @@ class Html
     }
 
     /**
+     * Contents of an html file as plain text, or null when it cannot be read
+     *
+     * @param string $path Path of the html file
+     * @return string|null
+     */
+    public static function plain(string $path): ?string
+    {
+        $html = self::file($path);
+
+        if ($html === null) {
+            return null;
+        }
+
+        $text = strip_tags((string) preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', ' ', $html));
+
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    /**
      * Title of an html file, taken from its first heading, its title element, or its first line of text
      *
      * @param string $path Path of the html file

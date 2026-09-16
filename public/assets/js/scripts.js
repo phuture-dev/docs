@@ -50,6 +50,26 @@
     var COPIED_FOR = 1600;
 
     /**
+     * Shortest query the suggestions under the search bar are looked up for
+     */
+    var SEARCH_MINIMUM = 2;
+
+    /**
+     * Most suggestions shown under it
+     */
+    var SEARCH_SUGGESTIONS = 8;
+
+    /**
+     * How long the typing has to settle before they are looked up, in milliseconds
+     */
+    var SEARCH_DELAY = 180;
+
+    /**
+     * Key that puts the cursor in the search bar from anywhere on the page
+     */
+    var SEARCH_KEY = '/';
+
+    /**
      * Theme chosen on an earlier visit, or the default one
      */
     function storedTheme() {
@@ -466,6 +486,190 @@
         });
     }
 
+    /**
+     * Whether a key press is the page being typed into rather than navigated
+     *
+     * @param {Element|null} target Element the key press landed on
+     * @returns {boolean}
+     */
+    function isTyping(target) {
+        if (!target) {
+            return false;
+        }
+
+        return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].indexOf(target.tagName) !== -1;
+    }
+
+    /**
+     * One suggestion, as the link it is
+     *
+     * @param {Object} result Result as the search answered with it
+     * @returns {Element}
+     */
+    function suggestion(result) {
+        var link = document.createElement('a');
+        var title = document.createElement('strong');
+        var snippet = document.createElement('span');
+
+        link.className = 'docs-search-suggestion';
+        link.setAttribute('href', result.url + (result.anchor ? '#' + result.anchor : ''));
+        link.setAttribute('role', 'option');
+
+        title.textContent = result.title;
+        snippet.textContent = result.snippet || result.url;
+
+        link.appendChild(title);
+        link.appendChild(snippet);
+
+        return link;
+    }
+
+    /**
+     * Suggestions under the search bar, and the keyboard walking through them
+     *
+     * The form answers on its own where the browser cannot fetch, so what is
+     * built here only ever saves a reader the page of results, never replaces it.
+     *
+     * @param {Element} form Search form in the navbar
+     */
+    function buildSearchSuggestions(form) {
+        var field = form.querySelector('input[name="q"]');
+        var panel = form.querySelector('.docs-search-suggestions');
+
+        if (!field || !panel || !window.fetch) {
+            return;
+        }
+
+        var current = -1;
+        var timer = null;
+        var wanted = '';
+
+        var options = function() {
+            return panel.querySelectorAll('.docs-search-suggestion');
+        };
+
+        var close = function() {
+            panel.hidden = true;
+            panel.innerHTML = '';
+            field.setAttribute('aria-expanded', 'false');
+            current = -1;
+        };
+
+        var light = function(index) {
+            var links = options();
+
+            if (links.length === 0) {
+                return;
+            }
+
+            current = (index + links.length) % links.length;
+
+            Array.prototype.forEach.call(links, function(link, i) {
+                link.classList.toggle('is-current', i === current);
+            });
+
+            links[current].scrollIntoView({
+                block: 'nearest'
+            });
+        };
+
+        var show = function(results) {
+            panel.innerHTML = '';
+            current = -1;
+
+            if (results.length === 0) {
+                var empty = document.createElement('p');
+
+                empty.className = 'docs-search-empty';
+                empty.textContent = 'Nothing matches that.';
+                panel.appendChild(empty);
+            } else {
+                results.slice(0, SEARCH_SUGGESTIONS).forEach(function(result) {
+                    panel.appendChild(suggestion(result));
+                });
+            }
+
+            panel.hidden = false;
+            field.setAttribute('aria-expanded', 'true');
+        };
+
+        var look = function() {
+            var query = field.value.trim();
+
+            if (query.length < SEARCH_MINIMUM) {
+                close();
+
+                return;
+            }
+
+            wanted = query;
+
+            fetch('/search?format=json&q=' + encodeURIComponent(query), {
+                headers: {
+                    Accept: 'application/json'
+                }
+            }).then(function(response) {
+                return response.ok ? response.json() : Promise.reject();
+            }).then(function(answer) {
+                // An answer to something typed a moment ago is no longer the answer
+                if (answer.query === wanted) {
+                    show(answer.results || []);
+                }
+            }, function() {
+                close();
+            });
+        };
+
+        field.addEventListener('input', function() {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(look, SEARCH_DELAY);
+        });
+
+        field.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                close();
+                field.blur();
+
+                return;
+            }
+
+            if (panel.hidden) {
+                return;
+            }
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                light(current + 1);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                light(current - 1);
+            } else if (event.key === 'Enter' && current >= 0) {
+                event.preventDefault();
+                options()[current].click();
+            }
+        });
+
+        field.addEventListener('focus', function() {
+            if (field.value.trim().length >= SEARCH_MINIMUM) {
+                look();
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!form.contains(event.target)) {
+                close();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === SEARCH_KEY && !isTyping(event.target) && !event.metaKey && !event.ctrlKey) {
+                event.preventDefault();
+                field.focus();
+                field.select();
+            }
+        });
+    }
+
     function ready(callback) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback);
@@ -501,6 +705,12 @@
 
         if (article) {
             buildCopyButtons(article);
+        }
+
+        var search = document.getElementById('search');
+
+        if (search) {
+            buildSearchSuggestions(search);
         }
 
         if (!navbar) {

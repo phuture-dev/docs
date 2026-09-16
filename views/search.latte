@@ -1,0 +1,41 @@
+{layout 'structure.latte'}
+
+{block content}
+    <article class="pb-5">
+        <h1>Search</h1>
+
+        <form class="docs-search-form mb-4" action="/search" method="get" role="search">
+            <div class="input-group">
+                <span class="input-group-text" id="search-page-icon">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                </span>
+
+                <input class="form-control" type="search" name="q" value="{$query}" placeholder="Search the documentation"
+                    aria-label="Search the documentation" aria-describedby="search-page-icon" autofocus>
+            </div>
+        </form>
+
+        {if $query === ''}
+            <p class="text-body-secondary">Type what you are after and the documentation will be looked through for it.</p>
+        {elseif $results === []}
+            <p class="text-body-secondary">Nothing in the documentation matches <strong>{$query}</strong>.</p>
+        {else}
+            <p class="text-body-secondary">
+                {count($results)} {if count($results) === 1}page{else}pages{/if} matching <strong>{$query}</strong>
+            </p>
+
+            <ol class="docs-search-results list-unstyled">
+                {foreach $results as $result}
+                    <li class="docs-search-result">
+                        <a class="docs-search-title" href="{$result['url']}{if $result['anchor']}#{$result['anchor']}{/if}">
+                            {$result['title']}
+                        </a>
+
+                        <p class="docs-search-url">{$result['url']}</p>
+                        <p class="docs-search-snippet">{$result['snippet']}</p>
+                    </li>
+                {/foreach}
+            </ol>
+        {/if}
+    </article>
+{/block}

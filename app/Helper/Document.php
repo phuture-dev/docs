@@ -15,6 +15,11 @@ class Document
     public const EXTENSIONS = ['md', 'html'];
 
     /**
+     * Names a document is served under when a url points at the folder holding it
+     */
+    public const DEFAULT_NAMES = ['index', 'readme'];
+
+    /**
      * Contents of the files read so far, keyed by path
      */
     private static array $contents = [];

@@ -175,7 +175,7 @@ class Reference
         $items = [];
 
         foreach ($doc['tags'] as $tag) {
-            if (!in_array($tag['name'], ['see', 'link'], true)) {
+            if (!in_array($tag['name'], ['see'], true)) {
                 continue;
             }
 

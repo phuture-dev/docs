@@ -7,11 +7,6 @@ use Phuture\App\{Controller, Helper\Document};
 class Docs extends Controller
 {
     /**
-     * Documents served when a url points at a folder
-     */
-    protected const DEFAULT_DOCUMENTS = ['index', 'readme'];
-
-    /**
      * Documents that drive the site rather than being pages of it
      */
     protected const PROTECTED_DOCUMENTS = ['sidebar'];
@@ -53,7 +48,7 @@ class Docs extends Controller
 
         // A folder is served by the document inside it, a page by any format it is written in
         $document = is_dir($path)
-            ? Document::find($path, Document::fileNames(self::DEFAULT_DOCUMENTS))
+            ? Document::find($path, Document::fileNames(Document::DEFAULT_NAMES))
             : Document::find(dirname($path), Document::fileNames($name));
 
         if (in_array(strtolower(pathinfo((string) $document, PATHINFO_FILENAME)), self::PROTECTED_DOCUMENTS, true)) {

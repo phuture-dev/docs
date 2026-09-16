@@ -43,7 +43,7 @@ class PhpSource
         $namespace = '';
         $types = [];
         $type = null;
-        $doc = null;
+        $docs = [];
         $depth = 0;
 
         for ($index = 0; $index < $count; $index++) {
@@ -54,9 +54,10 @@ class PhpSource
                 continue;
             }
 
-            // Held for whatever is declared next, as an attribute or a modifier may stand in between
+            // Held for whatever is declared next, as an attribute, a modifier or
+            // another docblock may stand in between
             if ($id === T_DOC_COMMENT) {
-                $doc = $text;
+                $docs[] = $text;
 
                 continue;
             }
@@ -74,7 +75,7 @@ class PhpSource
             if ($id === T_NAMESPACE && $depth === 0) {
                 $next = self::significant($tokens, $index + 1);
                 $namespace = in_array($tokens[$next]['id'], [T_STRING, T_NAME_QUALIFIED], true) ? $tokens[$next]['text'] : '';
-                $doc = null;
+                $docs = [];
 
                 continue;
             }
@@ -86,12 +87,12 @@ class PhpSource
                     'kind' => mb_strtolower($text),
                     'name' => $tokens[$name]['text'],
                     'header' => self::header($tokens, $index),
-                    'doc' => PhpDoc::parse($doc),
+                    'doc' => PhpDoc::parseAll($docs),
                     'members' => [],
                 ];
 
                 $type = count($types) - 1;
-                $doc = null;
+                $docs = [];
 
                 continue;
             }
@@ -99,14 +100,14 @@ class PhpSource
             // A body opens here, be it of a type, of a method, or of a string holding a variable
             if ($text === '{' || $id === T_CURLY_OPEN || $id === T_DOLLAR_OPEN_CURLY_BRACES) {
                 $depth++;
-                $doc = null;
+                $docs = [];
 
                 continue;
             }
 
             if ($text === '}') {
                 $depth--;
-                $doc = null;
+                $docs = [];
 
                 continue;
             }
@@ -125,12 +126,12 @@ class PhpSource
                         'kind' => 'method',
                         'name' => $tokens[$name]['text'],
                         'signature' => self::signature($tokens, $index),
-                        'doc' => PhpDoc::parse($doc),
+                        'doc' => PhpDoc::parseAll($docs),
                     ];
 
                     // Past the signature, so that a promoted property is never read as a member of its own
                     $index = self::closing($tokens, $index) - 1;
-                    $doc = null;
+                    $docs = [];
 
                     continue;
                 }
@@ -144,18 +145,18 @@ class PhpSource
                             'kind' => $id === T_CONST ? 'constant' : 'case',
                             'name' => $name,
                             'signature' => $signature,
-                            'doc' => PhpDoc::parse($doc),
+                            'doc' => PhpDoc::parseAll($docs),
                         ];
                     }
 
                     $index = $end;
-                    $doc = null;
+                    $docs = [];
 
                     continue;
                 }
             }
 
-            $doc = null;
+            $docs = [];
         }
 
         return ['namespace' => $namespace, 'types' => $types];

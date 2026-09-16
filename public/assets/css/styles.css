@@ -530,10 +530,22 @@ aside {
     margin-bottom: 1.5rem;
 }
 
+/**
+ * The wrapper is what scrolls, leaving the table itself free to fill the column
+ * it stands in rather than shrinking to the width of what it holds
+ */
+.docs-content .table-responsive {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--docs-border-strong) transparent;
+}
+
+.docs-content .table-responsive table {
+    margin-bottom: 0;
+}
+
 .docs-content table {
     width: 100%;
-    display: block;
-    overflow-x: auto;
     border-collapse: collapse;
     font-size: 0.9375rem;
 }

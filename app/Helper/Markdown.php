@@ -5,9 +5,13 @@ namespace Phuture\App\Helper;
 use Throwable;
 use League\CommonMark\Node\Inline\Newline;
 use League\CommonMark\Parser\MarkdownParser;
+use League\CommonMark\Renderer\HtmlDecorator;
 use League\CommonMark\Environment\Environment;
+use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Node\{Node, StringContainerInterface};
+use League\CommonMark\Extension\Table\{Table, TableRenderer};
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Node\Block\{Document as Ast, Paragraph};
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
@@ -16,9 +20,19 @@ use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 class Markdown
 {
     /**
+     * Extensions of the documents a link is dropped for
+     */
+    public const DOCUMENT_EXTENSIONS = ['md'];
+
+    /**
      * Converter shared by every conversion of this request
      */
     private static ?GithubFlavoredMarkdownConverter $converter = null;
+
+    /**
+     * Path of the document being converted, links are resolved against
+     */
+    private static ?string $document = null;
 
     /**
      * Convert a markdown file to HTML, or null when it cannot be read or parsed
@@ -35,7 +49,7 @@ class Markdown
         }
 
         try {
-            return self::render($markdown);
+            return self::render($markdown, $path);
         } catch (Throwable) {
             return null;
         }
@@ -45,11 +59,18 @@ class Markdown
      * Convert markdown to HTML
      *
      * @param string $markdown Markdown to convert
+     * @param string|null $path Path of the document the markdown comes from, links are resolved against
      * @return string
      */
-    public static function render(string $markdown): string
+    public static function render(string $markdown, ?string $path = null): string
     {
-        return (string) self::converter()->convert($markdown);
+        self::$document = $path;
+
+        try {
+            return (string) self::converter()->convert($markdown);
+        } finally {
+            self::$document = null;
+        }
     }
 
     /**
@@ -79,7 +100,137 @@ class Markdown
 
         self::$converter->getEnvironment()->addExtension(new HeadingPermalinkExtension());
 
+        // A table is given a wrapper of its own, so that it can fill the column it
+        // stands in and still be scrolled sideways where the column is too narrow for it
+        self::$converter->getEnvironment()->addRenderer(
+            Table::class,
+            new HtmlDecorator(new TableRenderer(), 'div', ['class' => 'table-responsive']),
+            10
+        );
+        self::$converter->getEnvironment()->addEventListener(DocumentParsedEvent::class, self::repointDocumentLinks(...));
+
         return self::$converter;
+    }
+
+    /**
+     * Point every link a document makes to another document at the page it is served as
+     *
+     * Documents are written for the repository they come from, where a link to the
+     * file next to them leads somewhere. Served as a page, the same file sits under
+     * a url of its own, which the link is moved onto. A link leading nowhere on the
+     * site is taken off instead, leaving only its label behind.
+     *
+     * @param DocumentParsedEvent $event Event carrying the document that was parsed
+     * @return void
+     */
+    protected static function repointDocumentLinks(DocumentParsedEvent $event): void
+    {
+        $links = [];
+
+        // Gathered first, as the tree is walked while it is still whole
+        foreach ($event->getDocument()->iterator() as $node) {
+            if ($node instanceof Link && self::isDocumentLink($node->getUrl())) {
+                $links[] = $node;
+            }
+        }
+
+        foreach ($links as $link) {
+            $url = self::documentUrl($link->getUrl());
+
+            if ($url !== null) {
+                $link->setUrl($url);
+
+                continue;
+            }
+
+            while (($child = $link->firstChild()) !== null) {
+                $link->insertBefore($child);
+            }
+
+            $link->detach();
+        }
+    }
+
+    /**
+     * Whether a url points at a document sitting beside the one being rendered
+     *
+     * @param string $url Url the link carries
+     * @return bool
+     */
+    protected static function isDocumentLink(string $url): bool
+    {
+        // Anything leading off the site is left alone, as it points at a page that exists
+        if ($url === '' || preg_match('#^[a-z][a-z0-9+.-]*:|^//#i', $url)) {
+            return false;
+        }
+
+        $path = preg_replace('/[?#].*$/', '', $url) ?? $url;
+
+        return in_array(Document::extension($path), self::DOCUMENT_EXTENSIONS, true);
+    }
+
+    /**
+     * Url of the page a document link is served as, or null when it leads nowhere
+     *
+     * @param string $url Url the link carries
+     * @return string|null
+     */
+    protected static function documentUrl(string $url): ?string
+    {
+        if (self::$document === null || !preg_match('/^([^?#]*)(.*)$/', $url, $parts)) {
+            return null;
+        }
+
+        $document = self::resolve($parts[1]);
+
+        // Whatever the link carries past the file is kept, so it lands where it was aimed
+        return $document === null ? null : self::pageUrl($document) . $parts[2];
+    }
+
+    /**
+     * Path of the document a link points at, or null when there is no such document
+     *
+     * @param string $path Path the link carries, relative to the document holding it
+     * @return string|null
+     */
+    protected static function resolve(string $path): ?string
+    {
+        $root = realpath(DOCS_DIR);
+
+        if ($root === false) {
+            return null;
+        }
+
+        $path = str_replace('/', DS, $path);
+        $base = str_starts_with($path, DS) ? $root : dirname((string) self::$document);
+        $directory = realpath(dirname($base . DS . ltrim($path, DS)));
+
+        // Nothing outside the documentation, however far a link walks up
+        if ($directory === false || !str_starts_with($directory . DS, rtrim($root, DS) . DS)) {
+            return null;
+        }
+
+        return Document::find($directory, [basename($path)]);
+    }
+
+    /**
+     * Url a document inside the documentation is served under
+     *
+     * @param string $document Path of the document
+     * @return string
+     */
+    protected static function pageUrl(string $document): string
+    {
+        $root = rtrim((string) realpath(DOCS_DIR), DS);
+        $segments = explode(DS, trim(substr($document, strlen($root)), DS));
+        $name = strtolower(pathinfo((string) array_pop($segments), PATHINFO_FILENAME));
+
+        // A folder is served by the document inside it, which is left off its url
+        if (!in_array($name, Document::DEFAULT_NAMES, true)) {
+            $segments[] = $name;
+        }
+
+        return '/' . implode('/', $segments);
     }
 
     /**

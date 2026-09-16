@@ -1,28 +1,27 @@
-[
-  {
-    "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/WORKFLOW.md",
-    "destination": "/",
-    "type": "doc"
-  },
-  {
-    "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/CODE_OF_CONDUCT.md",
-    "destination": "/",
-    "type": "doc"
-  },
-  {
-    "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/CONTRIBUTING.md",
-    "destination": "/",
-    "type": "doc"
-  },
-  {
-    "source": "https://github.com/phuture-dev/coherence/",
-    "destination": "coherence/",
-    "type": "github",
-    "exclude": ["LICENSE.md"]
-  },
-  {
-    "source": "https://raw.githubusercontent.com/phuture-dev/continuum/refs/heads/main/README.md",
-    "destination": "continuum/",
-    "type": "doc"
-  }
+[{
+        "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/WORKFLOW.md",
+        "destination": "/",
+        "type": "doc"
+    },
+    {
+        "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/CODE_OF_CONDUCT.md",
+        "destination": "/",
+        "type": "doc"
+    },
+    {
+        "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/CONTRIBUTING.md",
+        "destination": "/",
+        "type": "doc"
+    },
+    {
+        "source": "https://github.com/phuture-dev/coherence/",
+        "destination": "coherence/",
+        "type": "github",
+        "exclude": ["LICENSE.md", "WORKFLOW.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
+    },
+    {
+        "source": "https://raw.githubusercontent.com/phuture-dev/continuum/refs/heads/main/README.md",
+        "destination": "continuum/",
+        "type": "doc"
+    }
 ]

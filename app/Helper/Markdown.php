@@ -3,6 +3,7 @@
 namespace Phuture\App\Helper;
 
 use Throwable;
+use Phuture\App\Renderer\CodeBlock;
 use League\CommonMark\Node\Inline\Newline;
 use League\CommonMark\Parser\MarkdownParser;
 use League\CommonMark\Renderer\HtmlDecorator;
@@ -12,10 +13,10 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
 use League\CommonMark\Node\{Node, StringContainerInterface};
 use League\CommonMark\Extension\Table\{Table, TableRenderer};
-use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Node\Block\{Document as Ast, Paragraph};
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\{FencedCode, Heading};
 
 class Markdown
 {
@@ -99,6 +100,10 @@ class Markdown
         ]);
 
         self::$converter->getEnvironment()->addExtension(new HeadingPermalinkExtension());
+
+        // Code is marked up as the language it is fenced as, rather than left as the
+        // one colour a browser paints it
+        self::$converter->getEnvironment()->addRenderer(FencedCode::class, new CodeBlock(), 10);
 
         // A table is given a wrapper of its own, so that it can fill the column it
         // stands in and still be scrolled sideways where the column is too narrow for it

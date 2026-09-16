@@ -31,6 +31,25 @@
     var OUTLINE_TITLE = 'On this page';
 
     /**
+     * Labels the copy button of a code block carries, before and after a copy
+     */
+    var COPY_LABEL = 'Copy code';
+    var COPIED_LABEL = 'Copied';
+
+    /**
+     * Icons it wears alongside those labels
+     */
+    var COPY_ICONS = {
+        idle: 'bi-clipboard',
+        copied: 'bi-check2'
+    };
+
+    /**
+     * How long it says so for, in milliseconds
+     */
+    var COPIED_FOR = 1600;
+
+    /**
      * Theme chosen on an earlier visit, or the default one
      */
     function storedTheme() {
@@ -101,7 +120,10 @@
             var list = headings[i].nextElementSibling;
 
             if (list && list.tagName === 'OL' && linksIntoPage(list)) {
-                return { heading: headings[i], list: list };
+                return {
+                    heading: headings[i],
+                    list: list
+                };
             }
         }
 
@@ -292,7 +314,9 @@
             });
 
             light();
-        }, { rootMargin: '-' + Math.round(navbarHeight() + 16) + 'px 0px -70% 0px' });
+        }, {
+            rootMargin: '-' + Math.round(navbarHeight() + 16) + 'px 0px -70% 0px'
+        });
 
         headings.forEach(function(heading) {
             observer.observe(heading);
@@ -308,6 +332,138 @@
         var navbar = document.getElementById('navbar');
 
         return navbar ? navbar.offsetHeight : 0;
+    }
+
+    /**
+     * Code a block holds, as it was written rather than as it is shown
+     *
+     * The numbers down the side are the page counting the lines for a reader, not
+     * part of the code itself, so they are left out of what is handed over.
+     *
+     * @param {Element} block Code block to read
+     * @returns {string}
+     */
+    function codeOf(block) {
+        var copy = (block.querySelector('code') || block).cloneNode(true);
+        var gutters = copy.querySelectorAll('.hl-gutter');
+
+        Array.prototype.forEach.call(gutters, function(gutter) {
+            gutter.remove();
+        });
+
+        return copy.textContent.replace(/\n+$/, '');
+    }
+
+    /**
+     * Put a text on the clipboard, however the browser lets us
+     *
+     * @param {string} text Text to copy
+     * @returns {Promise}
+     */
+    function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+
+        // A page served over plain http has the older way and nothing else
+        return new Promise(function(resolve, reject) {
+            var field = document.createElement('textarea');
+
+            field.value = text;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+
+            document.body.appendChild(field);
+            field.select();
+
+            try {
+                document.execCommand('copy') ? resolve() : reject();
+            } catch (error) {
+                reject(error);
+            }
+
+            field.remove();
+        });
+    }
+
+    /**
+     * Say on the button itself that the code is on the clipboard
+     *
+     * @param {Element} button Button that was pressed
+     */
+    function markCopied(button) {
+        var icon = button.querySelector('i');
+
+        button.classList.add('is-copied');
+        button.setAttribute('aria-label', COPIED_LABEL);
+        button.setAttribute('title', COPIED_LABEL);
+
+        if (icon) {
+            icon.classList.remove(COPY_ICONS.idle);
+            icon.classList.add(COPY_ICONS.copied);
+        }
+
+        window.clearTimeout(button.copiedTimer);
+
+        button.copiedTimer = window.setTimeout(function() {
+            button.classList.remove('is-copied');
+            button.setAttribute('aria-label', COPY_LABEL);
+            button.setAttribute('title', COPY_LABEL);
+
+            if (icon) {
+                icon.classList.remove(COPY_ICONS.copied);
+                icon.classList.add(COPY_ICONS.idle);
+            }
+        }, COPIED_FOR);
+    }
+
+    /**
+     * Button handing the code of a block over to the clipboard
+     *
+     * @param {Element} block Code block it belongs to
+     * @returns {Element}
+     */
+    function copyButton(block) {
+        var button = document.createElement('button');
+
+        button.type = 'button';
+        button.className = 'code-copy btn border-0 p-1 lh-1';
+        button.setAttribute('aria-label', COPY_LABEL);
+        button.setAttribute('title', COPY_LABEL);
+        button.innerHTML = '<i class="bi ' + COPY_ICONS.idle + '" aria-hidden="true"></i>';
+
+        button.addEventListener('click', function() {
+            copyText(codeOf(block)).then(function() {
+                markCopied(button);
+            }, function() {
+                // Nothing to say on a browser that will not let the page copy for the reader
+            });
+        });
+
+        return button;
+    }
+
+    /**
+     * Give every code block of the page a button to copy what it holds
+     *
+     * The button is built here rather than rendered with the page, so that one
+     * never sits on a page whose browser has no way of pressing it.
+     *
+     * @param {Element} article Article the page was rendered into
+     */
+    function buildCopyButtons(article) {
+        var blocks = article.querySelectorAll('pre');
+
+        Array.prototype.forEach.call(blocks, function(block) {
+            var wrapper = document.createElement('div');
+
+            wrapper.className = 'code-block';
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+            wrapper.appendChild(copyButton(block));
+        });
     }
 
     function ready(callback) {
@@ -340,6 +496,12 @@
         }
 
         buildTableOfContents();
+
+        var article = document.querySelector('.docs-content article');
+
+        if (article) {
+            buildCopyButtons(article);
+        }
 
         if (!navbar) {
             return;

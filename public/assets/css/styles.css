@@ -18,6 +18,17 @@
     --docs-inline-code-border: #2c2c29;
     --docs-inline-code-color: var(--docs-accent-text);
     --docs-highlight-bg: #4a3f12;
+
+    /* Syntax, read on a code block, which is dark under either theme */
+    --docs-syntax-comment: #8b8b82;
+    --docs-syntax-gutter: #56564f;
+    --docs-syntax-keyword: #ff7b72;
+    --docs-syntax-type: #ffa657;
+    --docs-syntax-property: #d2a8ff;
+    --docs-syntax-variable: #79c0ff;
+    --docs-syntax-value: #a5d6ff;
+    --docs-syntax-addition: #7ee787;
+    --docs-syntax-deletion: #ff7b72;
     --docs-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --docs-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --docs-navbar-height: 3.5rem;
@@ -503,6 +514,51 @@ aside {
     color: inherit;
 }
 
+/**
+ * A code block and the button sitting over it, which the script builds around
+ * the block once the page is up
+ */
+.docs-content .code-block {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.docs-content .code-block pre {
+    margin-bottom: 0;
+}
+
+.docs-content .code-copy {
+    --bs-btn-border-radius: 0.375rem;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: var(--docs-muted);
+    background-color: var(--docs-code-bg);
+    box-shadow: 0 0 0 1px var(--docs-border-strong);
+    font-size: 0.875rem;
+    transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+.docs-content .code-copy:hover {
+    color: var(--docs-code-color);
+}
+
+.docs-content .code-copy.is-copied {
+    color: var(--docs-syntax-addition);
+}
+
+/* Out of the way until the block is pointed at, where there is a pointer to do it with */
+@media (hover: hover) {
+    .docs-content .code-copy {
+        opacity: 0;
+    }
+
+    .docs-content .code-block:hover .code-copy,
+    .docs-content .code-copy:focus-visible {
+        opacity: 1;
+    }
+}
+
 .docs-content pre {
     margin-bottom: 1.5rem;
     padding: 1.125rem 1.25rem;
@@ -520,6 +576,63 @@ aside {
     font-size: 0.875rem;
     line-height: 1.7;
     tab-size: 4;
+}
+
+/**
+ * Syntax, marked up as the language a block is fenced as
+ *
+ * A code block keeps its dark surface whichever theme the page is on, so one set
+ * of colours is read under both. Anything the highlighter marks but nothing here
+ * names is left the colour of the code around it.
+ */
+/* Counted for a reader, so it is neither read out nor carried off with a copy */
+.docs-content pre .hl-gutter {
+    padding-right: 1.25rem;
+    color: var(--docs-syntax-gutter);
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.docs-content pre .hl-comment {
+    color: var(--docs-syntax-comment);
+    font-style: italic;
+}
+
+.docs-content pre .hl-keyword,
+.docs-content pre .hl-operator {
+    color: var(--docs-syntax-keyword);
+}
+
+.docs-content pre .hl-type,
+.docs-content pre .hl-attribute {
+    color: var(--docs-syntax-type);
+}
+
+.docs-content pre .hl-property,
+.docs-content pre .hl-generic {
+    color: var(--docs-syntax-property);
+}
+
+.docs-content pre .hl-variable,
+.docs-content pre .hl-number,
+.docs-content pre .hl-literal {
+    color: var(--docs-syntax-variable);
+}
+
+.docs-content pre .hl-value {
+    color: var(--docs-syntax-value);
+}
+
+.docs-content pre .hl-addition {
+    color: var(--docs-syntax-addition);
+}
+
+.docs-content pre .hl-deletion {
+    color: var(--docs-syntax-deletion);
+}
+
+.docs-content pre .hl-diff-context {
+    color: var(--docs-syntax-comment);
 }
 
 /**
@@ -596,7 +709,7 @@ aside {
     list-style: none;
 }
 
-.docs-content li > input[type="checkbox"] {
+.docs-content li>input[type="checkbox"] {
     margin-right: 0.5rem;
     accent-color: var(--docs-accent);
 }

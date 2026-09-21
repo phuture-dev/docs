@@ -5,7 +5,7 @@ namespace Phuture\App;
 use Throwable;
 use Latte\Engine;
 use Pop\Controller\AbstractController;
-use Phuture\App\Helper\{Document, Sidebar};
+use Phuture\App\Helper\{Document, Sidebar, Url};
 
 /**
  * Base of every controller a request is answered with.
@@ -240,6 +240,8 @@ class Controller extends AbstractController
         }
 
         self::$engine = new Engine();
+        self::$engine->addFunction('url', fn (string $path): string => Url::to($path));
+
         $cacheDirectory = self::cacheDirectory();
 
         if ($cacheDirectory !== null) {

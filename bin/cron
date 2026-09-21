@@ -31,6 +31,7 @@ define('DS', DIRECTORY_SEPARATOR);
 define('VIEWS_DIR', dirname(__DIR__) . DS . 'views' . DS);
 define('CACHE_DIR', dirname(__DIR__) . DS . 'cache' . DS);
 define('DOCS_DIR', dirname(__DIR__) . DS . 'docs' . DS);
+define('BASE_PATH', '');
 
 /**
  * Load configuration files

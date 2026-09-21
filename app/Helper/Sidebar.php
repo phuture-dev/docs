@@ -225,7 +225,8 @@ class Sidebar
                 }
             }
 
-            $entry['url'] = $link instanceof Link ? $link->getUrl() : '';
+            $url = $link instanceof Link ? $link->getUrl() : '';
+            $entry['url'] = str_starts_with($url, '/') ? Url::to($url) : $url;
             $entry['label'] = Markdown::text($link ?? $child) ?: $entry['url'];
         }
 

@@ -55,6 +55,18 @@ Bring the documentation up to date, which is what the cron entry runs:
 composer cron
 ```
 
+## Deployment
+
+The site is served out of the `public/` folder. Point the document root of the domain or subdomain at it and nothing else is needed.
+
+Where the document root cannot be moved, which is what shared hosting such as cPanel gives, put the project inside the folder that is already published, `public_html` or a folder of it. The `.htaccess` in the project root serves the site out of `public/` wherever it sits, and every url the site writes is carried under that folder. Nothing outside `public/` is reachable either way.
+
+Whichever way it is installed, `cache/` has to be writable by the web server, and `bin/cron` is what keeps the documentation up to date:
+
+```
+* * * * * /usr/local/bin/php /home/user/public_html/bin/cron
+```
+
 ## Contributing
 
 Thank you for considering contributing to this project! You can read the **[Contribution Guide](CONTRIBUTING.md)**.

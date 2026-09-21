@@ -535,6 +535,7 @@
     function buildSearchSuggestions(form) {
         var field = form.querySelector('input[name="q"]');
         var panel = form.querySelector('.docs-search-suggestions');
+        var endpoint = form.getAttribute('action') || '/search';
 
         if (!field || !panel || !window.fetch) {
             return;
@@ -604,7 +605,7 @@
 
             wanted = query;
 
-            fetch('/search?format=json&q=' + encodeURIComponent(query), {
+            fetch(endpoint + '?format=json&q=' + encodeURIComponent(query), {
                 headers: {
                     Accept: 'application/json'
                 }

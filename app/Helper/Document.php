@@ -273,7 +273,7 @@ class Document
             $segments[] = $name;
         }
 
-        return '/' . implode('/', $segments);
+        return Url::to(implode('/', $segments));
     }
 
     /**

@@ -16,3 +16,4 @@ defined('APP_NAME') || define('APP_NAME', 'Phuture Documentation');
 defined('VIEWS_DIR') || define('VIEWS_DIR', dirname(__DIR__) . DS . 'views' . DS);
 defined('CACHE_DIR') || define('CACHE_DIR', __DIR__ . DS . 'temp' . DS);
 defined('DOCS_DIR') || define('DOCS_DIR', __DIR__ . DS . 'fixtures' . DS . 'docs' . DS);
+defined('BASE_PATH') || define('BASE_PATH', '');

@@ -476,8 +476,10 @@ class Search
      * Takes a mark of the documentation as it stands.
      *
      * Every document and the moment it last changed are hashed together into one
-     * short string. An index carrying a different mark was written against different
-     * documents, or by a different shape of this class, and is built again.
+     * short string, together with the path the site is served from, because an entry
+     * holds the url of its document rather than only its path. An index carrying a
+     * different mark was written against different documents, from a different place,
+     * or by a different shape of this class, and is built again.
      *
      * Example:
      * ```php
@@ -495,6 +497,6 @@ class Search
     {
         $marks = array_map(fn ($path) => $path . ':' . filemtime($path), $documents);
 
-        return hash('xxh128', self::INDEX_VERSION . "\n" . implode("\n", $marks));
+        return hash('xxh128', self::INDEX_VERSION . "\n" . Url::base() . "\n" . implode("\n", $marks));
     }
 }

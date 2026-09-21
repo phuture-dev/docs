@@ -55,27 +55,15 @@ Bring the documentation up to date, which is what the cron entry runs:
 composer cron
 ```
 
-## Project Layout
-
-| Path            | Purpose                                                        |
-|-----------------|----------------------------------------------------------------|
-| `docs/`         | The documentation itself, as markdown                           |
-| `app/`          | Controllers, commands and helpers of the site                   |
-| `views/`        | Latte templates the pages are rendered with                     |
-| `public/`       | Document root, assets and the front controller                  |
-| `bin/cron`      | Entry point of the scheduled run that syncs the documentation   |
-| `source.json`   | The documents and repositories the documentation is brought in from |
-
-
 ## Contributing
 
-Thank you for considering contributing to this project! You can read the **[Contribution Guide](docs/contributing.md)** and our **[Developer Workflow Guide](docs/workflow.md)**.
+Thank you for considering contributing to this project! You can read the **[Contribution Guide](CONTRIBUTING.md)**.
 
 Corrections to a page brought in from another repository belong in that repository, since anything written here would be replaced on the next sync.
 
 ## Code of Conduct
 
-This project follows a Code of Conduct that all community members and contributors are expected to adhere to our **[Contributor Code of Conduct](docs/code_of_conduct.md)**.
+This project follows a Code of Conduct that all community members and contributors are expected to adhere to our **[Contributor Code of Conduct](CODE_OF_CONDUCT.md)**.
 
 ## License
 

@@ -2,6 +2,17 @@
 
 namespace Phuture\App\Helper;
 
+/**
+ * Writes the reference page of a php source as markdown.
+ *
+ * Takes the types a source declares, as they were read out of it, and writes them
+ * out as a page: the signature of each, the prose of its docblock, and what its
+ * tags have to say about what goes in, what comes out and what may be thrown.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class Reference
 {
     /**
@@ -17,7 +28,7 @@ class Reference
     /**
      * Page of a source, titled after the first type it declares
      *
-     * @param array $parsed Namespace and types the source declares
+     * @param array $parsed Namespace and types the source declares, as `namespace` and `types`
      * @return string
      */
     public static function page(array $parsed): string
@@ -38,7 +49,7 @@ class Reference
      * site reads the title of the page from, and every member sits below the
      * second level so that the outline down the side has something to show.
      *
-     * @param array $type Type to write out
+     * @param array $type Type to write out, holding `kind`, `name`, `header`, `doc` and `members`
      * @param string $namespace Namespace the type is declared in
      * @param bool $first Whether this is the type the page is named after
      * @return string
@@ -76,7 +87,7 @@ class Reference
     /**
      * One constant, case or method
      *
-     * @param array $member Member to write out
+     * @param array $member Member to write out, holding `kind`, `name`, `signature` and `doc`
      * @param string $level Heading the member is written under
      * @return string
      */
@@ -99,7 +110,7 @@ class Reference
     /**
      * Table of the parameters a docblock names, or nothing when it names none
      *
-     * @param array $doc Docblock as it was read
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
      * @return string
      */
     protected static function parameters(array $doc): string
@@ -127,7 +138,7 @@ class Reference
     /**
      * What a member hands back, as the docblock says it
      *
-     * @param array $doc Docblock as it was read
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
      * @return string
      */
     protected static function returns(array $doc): string
@@ -138,16 +149,13 @@ class Reference
             return '';
         }
 
-        $return = PhpDoc::typed($bodies[0]);
-        $description = self::flatten($return['description']);
-
-        return trim('**Returns** ' . self::code($return['type']) . ($description === '' ? '' : ' — ' . $description));
+        return trim('**Returns** ' . self::described(PhpDoc::typed($bodies[0])));
     }
 
     /**
      * What a member throws, as a list, since a reason may run over more than a line
      *
-     * @param array $doc Docblock as it was read
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
      * @return string
      */
     protected static function throws(array $doc): string
@@ -155,19 +163,16 @@ class Reference
         $items = [];
 
         foreach (PhpDoc::tagged($doc, 'throws') as $body) {
-            $thrown = PhpDoc::typed($body);
-            $description = self::flatten($thrown['description']);
-
-            $items[] = '- ' . trim(self::code($thrown['type']) . ($description === '' ? '' : ' — ' . $description));
+            $items[] = '- ' . self::described(PhpDoc::typed($body));
         }
 
-        return $items === [] ? '' : "**Throws**\n\n" . implode("\n", $items);
+        return self::listed('Throws', $items);
     }
 
     /**
      * Links and cross references of a docblock
      *
-     * @param array $doc Docblock as it was read
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
      * @return string
      */
     protected static function notes(array $doc): string
@@ -189,16 +194,16 @@ class Reference
                 continue;
             }
 
-            $items[] = '- ' . trim(self::code($note['type']) . ($description === '' ? '' : ' — ' . $description));
+            $items[] = '- ' . self::described($note);
         }
 
-        return $items === [] ? '' : "**See also**\n\n" . implode("\n", $items);
+        return self::listed('See also', $items);
     }
 
     /**
      * Notice that a member is on its way out, where a reader cannot miss it
      *
-     * @param array $doc Docblock as it was read
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
      * @return string
      */
     protected static function deprecated(array $doc): string
@@ -212,6 +217,32 @@ class Reference
         $description = self::flatten($bodies[0]);
 
         return trim('> **Deprecated.** ' . $description);
+    }
+
+    /**
+     * Items of a docblock under the heading they belong to, or nothing when there are none
+     *
+     * @param string $heading Heading the items are written under
+     * @param array $items Items to write out, as a list of the lines they are written on
+     * @return string
+     */
+    protected static function listed(string $heading, array $items): string
+    {
+        return $items === [] ? '' : '**' . $heading . "**\n\n" . implode("\n", $items);
+    }
+
+    /**
+     * Type of a tag and what it means, as one line
+     *
+     * @param array $typed Type and description of a tag as they were read, holding `type` and
+     *  `description`
+     * @return string
+     */
+    protected static function described(array $typed): string
+    {
+        $description = self::flatten($typed['description']);
+
+        return trim(self::code($typed['type']) . ($description === '' ? '' : ' — ' . $description));
     }
 
     /**
@@ -252,7 +283,7 @@ class Reference
     /**
      * Blocks of a page, with the blank lines between them that markdown reads by
      *
-     * @param array $blocks Blocks to join, of which the empty ones are left out
+     * @param array $blocks Blocks to join, as a list of which the empty ones are left out
      * @return string
      */
     protected static function join(array $blocks): string

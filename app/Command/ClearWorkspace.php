@@ -5,31 +5,62 @@ namespace Phuture\App\Command;
 use Phuture\App\Command;
 use Phuture\App\Enum\Schedule;
 
+/**
+ * Command that empties the workspace before anything is brought into it.
+ *
+ * Everything a source brings in is put in a folder of its own, so emptying those
+ * folders leaves the pages written by hand at the root of the documentation
+ * exactly where they were. It takes the lowest order of any command, because a run
+ * should never read what an earlier one left behind.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class ClearWorkspace extends Command
 {
     /**
-     * How often this command may run
+     * How often this command may run.
      *
-     * The workspace is cleared once a day, ahead of the commands that fill it back up.
+     * The workspace is cleared once a day, ahead of the commands that fill it
+     * back up, so that a run never reads what an earlier one left behind.
+     *
+     * @var \Phuture\App\Enum\Schedule
      */
     protected const SCHEDULE = Schedule::DAILY;
 
     /**
-     * Place this command takes in a run
+     * Place this command takes in a run.
      *
-     * The workspace is emptied before anything is brought into it.
+     * The lowest number of any command, because the workspace has to be empty
+     * before anything is brought into it.
+     *
+     * @var int
      */
     protected const ORDER = 10;
 
     /**
-     * Clear the workspace, keeping the pages written at the root of the documentation
+     * Clears the workspace, keeping the pages written at the root of the documentation.
      *
-     * Everything a source brings in is put in a folder of its own, so emptying
-     * the documentation of its folders leaves the pages of the site itself and
-     * takes away whatever a source has stopped carrying, or stopped being read
-     * from at all. This command takes no entries of its own.
+     * Everything a source brings in is put in a folder of its own, so emptying the
+     * documentation of its folders leaves the pages of the site itself where they
+     * are and takes away whatever a source has stopped carrying, or stopped being
+     * read from at all. A folder that is really a link to somewhere else is left
+     * alone, and so is whatever it points at.
      *
-     * @return int Exit code, zero when the workspace was cleared
+     * Unlike the other commands this one reads no entries from the source file:
+     * there is only ever one workspace to clear.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Command\ClearWorkspace;
+     *
+     * $exitCode = ClearWorkspace::run();
+     *
+     * // Returns 0, and prints a line for every folder taken away
+     * ```
+     *
+     * @return int Exit code, zero when the workspace was cleared and one when a folder would not go
      */
     public static function run(): int
     {
@@ -41,14 +72,7 @@ class ClearWorkspace extends Command
 
         $cleared = 0;
 
-        foreach ((array) scandir($docs) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $path = $docs . DIRECTORY_SEPARATOR . $file;
-
-            // A page of the site itself, and a link is left to whatever it was pointed at
+        foreach (self::children($docs) as $path) {
             if (!is_dir($path) || is_link($path)) {
                 continue;
             }

@@ -7,6 +7,20 @@ use League\CLImate\CLImate;
 use Phuture\App\Enum\Schedule;
 use League\CLImate\TerminalObject\Dynamic\Progress;
 
+/**
+ * Base of every command a scheduled run is made of.
+ *
+ * A command takes care of one type of entry in the source file: it reads the
+ * entries of its own type, brings what they name into the documentation folder,
+ * and remembers when it last ran so that the next run knows whether it is due
+ * again. Everything commands share sits here, from reading the source file and
+ * staging a download before it is moved into place, to writing to the console and
+ * keeping the schedule.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 abstract class Command
 {
     /**
@@ -59,7 +73,8 @@ abstract class Command
      * the keys only its own type knows about.
      *
      * @param string $path Path of the source file
-     * @return array|null
+     * @return array The entries of this command's type, or null when the source file cannot be
+     *  read
      */
     protected static function entries(string $path): ?array
     {
@@ -195,13 +210,9 @@ abstract class Command
      */
     protected static function hidden(string $path): bool
     {
-        foreach (explode('/', str_replace('\\', '/', $path)) as $segment) {
-            if (str_starts_with($segment, '.')) {
-                return true;
-            }
-        }
+        $segments = explode('/', str_replace('\\', '/', $path));
 
-        return false;
+        return array_any($segments, fn ($segment) => str_starts_with($segment, '.'));
     }
 
     /**
@@ -259,8 +270,9 @@ abstract class Command
      * The documentation root is left alone, as the pages the site is built
      * around live there next to whatever a source brings in, owned by no entry.
      *
-     * @param array $destinations Folders to empty, named as many times as the run writes into them
-     * @return bool
+     * @param array $destinations Folders to empty, named as many times as the run
+     *  writes into them
+     * @return bool Returns true when every folder was emptied, false when one would not go
      */
     protected static function clear(array $destinations): bool
     {
@@ -273,14 +285,8 @@ abstract class Command
                 continue;
             }
 
-            foreach ((array) scandir($path) as $file) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-
-                $child = $path . DIRECTORY_SEPARATOR . $file;
-
-                is_dir($child) ? self::remove($child) : @unlink($child);
+            foreach (self::children($path) as $child) {
+                self::delete($child);
 
                 // Something left behind would be served next to the documents that are about to come in
                 if (file_exists($child)) {
@@ -323,18 +329,45 @@ abstract class Command
             return;
         }
 
-        foreach ((array) scandir($path) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $child = $path . DIRECTORY_SEPARATOR . $file;
-
-            // A link is taken away itself, rather than being walked down into whatever it points at
-            is_dir($child) && !is_link($child) ? self::remove($child) : @unlink($child);
+        foreach (self::children($path) as $child) {
+            self::delete($child);
         }
 
         @rmdir($path);
+    }
+
+    /**
+     * Paths of everything a directory holds, its own two entries left out
+     *
+     * The entries named `.` and `..` are the directory itself and the one above
+     * it, which nothing walking a directory means to be handed.
+     *
+     * @param string $path Path of the directory
+     * @return array Path of every child the directory holds
+     */
+    protected static function children(string $path): array
+    {
+        $children = [];
+
+        foreach ((array) scandir($path) as $file) {
+            if ($file !== '.' && $file !== '..') {
+                $children[] = $path . DIRECTORY_SEPARATOR . $file;
+            }
+        }
+
+        return $children;
+    }
+
+    /**
+     * Take a file or a directory away, whichever the path names
+     *
+     * @param string $path Path to take away
+     * @return void
+     */
+    protected static function delete(string $path): void
+    {
+        // A link is taken away itself, rather than being walked down into whatever it points at
+        is_dir($path) && !is_link($path) ? self::remove($path) : @unlink($path);
     }
 
     /**

@@ -7,61 +7,95 @@ use Latte\Engine;
 use Pop\Controller\AbstractController;
 use Phuture\App\Helper\{Document, Sidebar};
 
+/**
+ * Base of every controller a request is answered with.
+ *
+ * Holds what every page has in common: the template engine, the data shared by
+ * every view such as the navigation and the path being served, and the ways a
+ * request may be answered, whether as a rendered view, as a document of the
+ * documentation, as json, or as the page that says nothing was found.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class Controller extends AbstractController
 {
     /**
-     * View rendered when the requested one is missing or unusable
+     * View rendered when the one asked for is missing or unusable.
+     *
+     * Named without its extension, like every other view. It is what a reader is
+     * shown for a url leading nowhere, and for a page the site knows about but
+     * cannot render.
+     *
+     * @var string
      */
     protected const NOT_FOUND_VIEW = '404';
 
     /**
-     * Template engine shared by every render of this request
+     * Template engine shared by every render of this request.
+     *
+     * Built the first time a view is rendered and kept for the rest of the request,
+     * because one request may render a page and then the navigation around it.
+     *
+     * @var \Latte\Engine|null
      */
     private static ?Engine $engine = null;
 
     /**
-     * Render a view, falling back to the 404 page when it cannot be rendered
+     * Renders a view and prints it.
      *
-     * @param string|null $view Name of the view inside VIEWS_DIR, without the .latte extension
-     * @param array $data Variables for the template, merged over the data shared by every view
+     * The variables you pass are laid over the ones every view is given, such as the
+     * navigation, so a view can override them where it needs to. A view that is missing,
+     * or that breaks halfway through being rendered, is answered with the page that says
+     * nothing was found rather than with half a page saying nothing.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * Controller::render('search', ['title' => 'Search', 'query' => 'uuid']);
+     *
+     * // Prints the rendered search page
+     * ```
+     *
+     * @param string|null $view Name of the view, without its .latte extension (default: null)
+     * @param array $data Variables for the template, merged over the data shared by
+     *  every view (default: [])
      * @return void
+     * @see \Phuture\App\Controller::output()
      */
     protected static function render(?string $view = null, array $data = []): void
     {
-        $template = VIEWS_DIR . $view . '.latte';
-
-        if ($view === null || $view === '' || !is_file($template)) {
+        if ($view === null || $view === '' || !self::output($view, $data)) {
             self::renderNotFound();
-
-            return;
         }
-
-        // Set default data
-        $data['app_name'] = APP_NAME;
-
-        // Render to a string first, so a broken template does not leave half a page behind
-        try {
-            $output = self::engine()->renderToString($template, array_merge(self::sharedData(), $data));
-        } catch (Throwable) {
-            self::renderNotFound();
-
-            return;
-        }
-
-        echo $output;
     }
 
     /**
-     * Render a document as a page, falling back to the 404 page when there is none
+     * Renders a document as a page and prints it.
      *
-     * @param string|null $path Path of the document
+     * The document gives the page both its contents and its title, and a document
+     * that cannot be read is answered with the page that says nothing was found.
+     * A document with no title of its own borrows the name of the site.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * Controller::renderDocument('/var/www/docs/index.md');
+     *
+     * // Prints the rendered docs/index.md
+     * ```
+     *
+     * @param string|null $path Path of the document to render (default: null)
      * @return void
+     * @see \Phuture\App\Controller::render()
      */
     protected static function renderDocument(?string $path = null): void
     {
         $content = $path !== null ? Document::file($path) : null;
 
-        // Nothing to show without a document
         if ($content === null) {
             self::renderNotFound();
 
@@ -75,7 +109,21 @@ class Controller extends AbstractController
     }
 
     /**
-     * Answer with json rather than a page, for whatever on the page is asking
+     * Answers with data rather than with a page.
+     *
+     * Used by the parts of a page that ask the site something while a reader is
+     * still on it, such as the search bar looking results up as they type. Slashes
+     * and accented letters are written as themselves rather than escaped, which
+     * keeps a url in the answer readable.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * Controller::renderJson(['query' => 'uuid', 'results' => []]);
+     *
+     * // Prints {"query":"uuid","results":[]}
+     * ```
      *
      * @param array $data Data to answer with
      * @return void
@@ -90,7 +138,20 @@ class Controller extends AbstractController
     }
 
     /**
-     * Send the 404 page, or nothing but the status code when that view is unusable too
+     * Sends the page that says nothing was found.
+     *
+     * The status is set first, so a browser and a search engine are told the page is
+     * missing whether or not there is anything to show them. When even that view
+     * cannot be rendered the status goes out on its own rather than with an error.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * Controller::renderNotFound();
+     *
+     * // Answers 404 and prints the page saying so
+     * ```
      *
      * @return void
      */
@@ -100,30 +161,77 @@ class Controller extends AbstractController
             http_response_code(404);
         }
 
-        $template = VIEWS_DIR . self::NOT_FOUND_VIEW . '.latte';
-
-        if (!is_file($template)) {
-            return;
-        }
-
-        $data = array_merge(self::sharedData(), [
-            'app_name' => APP_NAME,
+        // Nothing is left to say when even this view cannot be rendered, so the status goes out on its own
+        self::output(self::NOT_FOUND_VIEW, [
             'title' => 'Page not found',
             'heading' => 'Page not found',
             'description' => 'The page you are looking for does not exist or has been moved.',
         ]);
-
-        try {
-            echo self::engine()->renderToString($template, $data);
-        } catch (Throwable) {
-            // Nothing left to render with
-        }
     }
 
     /**
-     * Template engine, caching its compiled templates whenever it is allowed to
+     * Renders a view and prints it, saying whether there was anything to print.
      *
-     * @return Engine
+     * The variables you pass are laid over the ones every view is given, such as the
+     * navigation, and the name of the site is laid over both so that no view can lose
+     * it. The page is rendered to a string before any of it is printed, which means a
+     * template that breaks halfway prints nothing at all and says so, rather than
+     * leaving half a page behind for its caller to answer after.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * $printed = Controller::output('search', ['title' => 'Search']);
+     *
+     * // Returns true, having printed the rendered search page
+     * ```
+     *
+     * @param string $view Name of the view, without its .latte extension
+     * @param array $data Variables for the template, merged over the data shared by
+     *  every view
+     * @return bool Returns true when the page was printed, false when the view is missing or broken
+     * @see \Phuture\App\Controller::render()
+     */
+    private static function output(string $view, array $data): bool
+    {
+        $template = VIEWS_DIR . $view . '.latte';
+
+        if (!is_file($template)) {
+            return false;
+        }
+
+        $data = array_merge(self::sharedData(), $data, ['app_name' => APP_NAME]);
+
+        try {
+            $output = self::engine()->renderToString($template, $data);
+        } catch (Throwable) {
+            return false;
+        }
+
+        echo $output;
+
+        return true;
+    }
+
+    /**
+     * Builds the template engine every render of this request goes through.
+     *
+     * A template is compiled into php the first time it is rendered, and the result
+     * is kept in the cache folder so that later requests skip the compiling. Where
+     * that folder cannot be written to, the engine is used without it and compiles
+     * each template again on every request.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * $engine = Controller::engine();
+     *
+     * // Returns the engine, built on the first call and kept for the rest
+     * ```
+     *
+     * @return \Latte\Engine The template engine of this request
      */
     protected static function engine(): Engine
     {
@@ -142,9 +250,23 @@ class Controller extends AbstractController
     }
 
     /**
-     * Directory the compiled templates are written to, creating it when missing, or null when it cannot be used
+     * Finds the directory the compiled templates are written to.
      *
-     * @return string|null
+     * The folder is created when it is missing, because a fresh checkout of the site
+     * has no cache folder yet. A folder that cannot be created, or that cannot be
+     * written to, is answered with null rather than with an error, and the site runs
+     * on without a cache.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * $directory = Controller::cacheDirectory();
+     *
+     * // Returns '/var/www/cache/' when that folder can be written to
+     * ```
+     *
+     * @return string|null Path of the folder, or null when it cannot be used
      */
     protected static function cacheDirectory(): ?string
     {
@@ -156,9 +278,23 @@ class Controller extends AbstractController
     }
 
     /**
-     * Data shared by every view, overridable by the caller
+     * Gathers the data every view is given.
      *
-     * @return array
+     * Every page of the site is drawn inside the same navigation, so the navigation
+     * and the path of the request being served are handed to every view rather than
+     * to each of them by name. A view is free to override either of them.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * $data = Controller::sharedData();
+     *
+     * // Returns ['sidebar' => [...], 'currentPath' => '/coherence']
+     * ```
+     *
+     * @return array The navigation and the path of the request being served
+     * @see \Phuture\App\Helper\Sidebar::tree()
      */
     protected static function sharedData(): array
     {
@@ -171,9 +307,23 @@ class Controller extends AbstractController
     }
 
     /**
-     * Path of the request being served, without query string or trailing slash
+     * Reads the path of the request being served.
      *
-     * @return string
+     * Only the path is kept: whatever the url carries after a question mark says what
+     * the page is being asked for rather than which page it is. A trailing slash is
+     * taken off so that one page is never two, and the site root stays a lone slash.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * // While serving /coherence/?q=uuid
+     * $path = Controller::currentPath();
+     *
+     * // Returns '/coherence'
+     * ```
+     *
+     * @return string The path of the request, without its query string or trailing slash
      */
     protected static function currentPath(): string
     {

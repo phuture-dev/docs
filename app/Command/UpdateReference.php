@@ -2,14 +2,22 @@
 
 namespace Phuture\App\Command;
 
-use SplFileInfo;
-use FilesystemIterator;
 use Phuture\App\Command;
 use Phuture\App\Enum\Schedule;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use Phuture\App\Helper\{PhpSource, Reference};
+use Phuture\App\Helper\{Directory, PhpSource, Reference};
 
+/**
+ * Command that writes a reference page for every php source brought in.
+ *
+ * The sources the other commands downloaded are read rather than run, and what
+ * they declare, together with the docblocks written above it, is written out as a
+ * page of markdown beside the source itself. A source declaring nothing worth a
+ * page is taken away again.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class UpdateReference extends Command
 {
     /**
@@ -123,36 +131,25 @@ class UpdateReference extends Command
      * Every source in the documentation, in the order their paths read
      *
      * @param string $directory Folder to read
-     * @return array
+     * @return array Paths of every source the folder holds, sorted
+     * @see \Phuture\App\Helper\Directory::files()
      */
     protected static function sources(string $directory): array
     {
-        if (!is_dir($directory)) {
-            return [];
-        }
-
         $sources = [];
 
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS)
-        );
-
-        /** @var SplFileInfo $file */
-        foreach ($files as $file) {
+        foreach (Directory::files($directory) as $file) {
             // A link is never followed, as what it points at may not be the documentation at all
-            if (!$file->isFile() || $file->isLink() || !self::supported($file->getPathname())) {
+            if (is_link($file) || !self::supported($file)) {
                 continue;
             }
 
-            $path = str_replace('\\', '/', substr($file->getPathname(), strlen($directory) + 1));
+            $path = str_replace('\\', '/', substr($file, strlen($directory) + 1));
 
             if (!self::hidden($path)) {
-                $sources[] = $file->getPathname();
+                $sources[] = $file;
             }
         }
-
-        // The order a filesystem hands its files back in is its own, and a run should read the same every time
-        sort($sources);
 
         return $sources;
     }

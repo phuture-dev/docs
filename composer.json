@@ -13,7 +13,9 @@
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",
-        "friendsofphp/php-cs-fixer": "^3.92.0"
+        "friendsofphp/php-cs-fixer": "^3.92.0",
+        "phpstan/phpstan": "^2.2",
+        "nette/tester": "^2.6"
     },
     "autoload": {
         "psr-4": {
@@ -25,9 +27,12 @@
             "@phpcbf",
             "php-cs-fixer fix"
         ],
+        "phpcbf": "phpcbf -n --standard=PSR12 app/ || true",
+        "phpstan": "phpstan analyse --memory-limit=1G",
+        "tester": "tester tests -C",
+        "test": ["@phpstan", "@tester", "php-cs-fixer fix --dry-run --diff"],
         "cron": "php bin/cron",
-        "server": "php -S localhost:8000",
-        "phpcbf": "phpcbf -n --standard=PSR12 app/ || true"
+        "server": "php -S localhost:8000 -t public public/index.php"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

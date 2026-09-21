@@ -4,6 +4,19 @@ namespace Phuture\App\Helper;
 
 use Throwable;
 
+/**
+ * Reads what a php source declares, without running it.
+ *
+ * The source is tokenized rather than included. It is a file from somebody else's
+ * repository, whose own dependencies are nowhere to be loaded from, so running it
+ * would either do what it holds or stop the run outright. What it declares, from
+ * the namespace down to the members of every type and the docblocks above them, is
+ * read straight out of the tokens.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class PhpSource
 {
     /**
@@ -22,6 +35,14 @@ class PhpSource
     protected const TRIVIA = [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
 
     /**
+     * Tokens saying nothing about what a source declares
+     *
+     * Whitespace and comments carry nothing, and the tags a file opens and closes
+     * with are the file itself rather than anything declared inside it.
+     */
+    protected const IGNORED = [T_WHITESPACE, T_COMMENT, T_OPEN_TAG, T_INLINE_HTML];
+
+    /**
      * Types a source declares, with the members and docblocks of each
      *
      * The source is read rather than run. It is a file from somebody else's
@@ -29,7 +50,9 @@ class PhpSource
      * including it would either run what it holds or stop the run outright.
      *
      * @param string $code Source to read
-     * @return array|null Namespace and types, or null when the source is not valid php
+     * @return array The namespace and the types the source declares, as `namespace` and `types`,
+     *  or null when the source is not valid php. Every type holds `kind`, `name`, `header`, `doc` and
+     *  `members`, and every member holds `kind`, `name`, `signature` and `doc`
      */
     public static function types(string $code): ?array
     {
@@ -50,7 +73,7 @@ class PhpSource
             $id = $tokens[$index]['id'];
             $text = $tokens[$index]['text'];
 
-            if (in_array($id, [T_WHITESPACE, T_COMMENT, T_OPEN_TAG, T_INLINE_HTML], true)) {
+            if (in_array($id, self::IGNORED, true)) {
                 continue;
             }
 
@@ -81,16 +104,7 @@ class PhpSource
             }
 
             if ($depth === 0 && self::declares($tokens, $index)) {
-                $name = self::significant($tokens, $index + 1);
-
-                $types[] = [
-                    'kind' => mb_strtolower($text),
-                    'name' => $tokens[$name]['text'],
-                    'header' => self::header($tokens, $index),
-                    'doc' => PhpDoc::parseAll($docs),
-                    'members' => [],
-                ];
-
+                $types[] = self::type($tokens, $index, $docs);
                 $type = count($types) - 1;
                 $docs = [];
 
@@ -115,19 +129,7 @@ class PhpSource
             // Only what a type declares itself, rather than whatever the bodies below it hold
             if ($depth === 1 && $type !== null) {
                 if ($id === T_FUNCTION) {
-                    $name = self::significant($tokens, $index + 1);
-
-                    // A method handing back a reference wears an ampersand where its name belongs
-                    if ($tokens[$name]['text'] === '&') {
-                        $name = self::significant($tokens, $name + 1);
-                    }
-
-                    $types[$type]['members'][] = [
-                        'kind' => 'method',
-                        'name' => $tokens[$name]['text'],
-                        'signature' => self::signature($tokens, $index),
-                        'doc' => PhpDoc::parseAll($docs),
-                    ];
+                    $types[$type]['members'][] = self::method($tokens, $index, $docs);
 
                     // Past the signature, so that a promoted property is never read as a member of its own
                     $index = self::closing($tokens, $index) - 1;
@@ -138,15 +140,9 @@ class PhpSource
 
                 if ($id === T_CONST || $id === T_CASE) {
                     $end = self::statement($tokens, $index);
-                    $signature = self::spacing(self::between($tokens, $index, $end));
 
-                    foreach (self::names($tokens, $index, $end) as $name) {
-                        $types[$type]['members'][] = [
-                            'kind' => $id === T_CONST ? 'constant' : 'case',
-                            'name' => $name,
-                            'signature' => $signature,
-                            'doc' => PhpDoc::parseAll($docs),
-                        ];
+                    foreach (self::constants($tokens, $index, $end, $docs) as $member) {
+                        $types[$type]['members'][] = $member;
                     }
 
                     $index = $end;
@@ -160,6 +156,80 @@ class PhpSource
         }
 
         return ['namespace' => $namespace, 'types' => $types];
+    }
+
+    /**
+     * One type as the reference reads it, with no member of its own yet
+     *
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
+     * @param int $index Index the type opens at
+     * @param array $docs Docblocks standing before the type, as a list of comments
+     * @return array The type as the reference reads it, holding `kind`, `name`, `header`, `doc` and
+     *  `members`
+     */
+    protected static function type(array $tokens, int $index, array $docs): array
+    {
+        $name = self::significant($tokens, $index + 1);
+
+        return [
+            'kind' => mb_strtolower($tokens[$index]['text']),
+            'name' => $tokens[$name]['text'],
+            'header' => self::header($tokens, $index),
+            'doc' => PhpDoc::parseAll($docs),
+            'members' => [],
+        ];
+    }
+
+    /**
+     * One method as the reference reads it
+     *
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
+     * @param int $index Index the method opens at
+     * @param array $docs Docblocks standing before the method, as a list of comments
+     * @return array The method as the reference reads it, holding `kind`, `name`, `signature` and `doc`
+     */
+    protected static function method(array $tokens, int $index, array $docs): array
+    {
+        $name = self::significant($tokens, $index + 1);
+
+        // A method handing back a reference wears an ampersand where its name belongs
+        if ($tokens[$name]['text'] === '&') {
+            $name = self::significant($tokens, $name + 1);
+        }
+
+        return [
+            'kind' => 'method',
+            'name' => $tokens[$name]['text'],
+            'signature' => self::signature($tokens, $index),
+            'doc' => PhpDoc::parseAll($docs),
+        ];
+    }
+
+    /**
+     * Constants or cases of a single statement, as one statement may declare several
+     *
+     * Each of them is a member of its own, under the statement they were written
+     * in, which is the only place a reader would find what any of them is worth.
+     *
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
+     * @param int $index Index the statement opens at
+     * @param int $end Index the statement ends at
+     * @param array $docs Docblocks standing before the statement, as a list of comments
+     * @return array Every constant or case the statement declares, each holding `kind`, `name`,
+     *  `signature` and `doc`
+     */
+    protected static function constants(array $tokens, int $index, int $end, array $docs): array
+    {
+        $kind = $tokens[$index]['id'] === T_CONST ? 'constant' : 'case';
+        $signature = self::spacing(self::between($tokens, $index, $end));
+        $doc = PhpDoc::parseAll($docs);
+        $members = [];
+
+        foreach (self::names($tokens, $index, $end) as $name) {
+            $members[] = ['kind' => $kind, 'name' => $name, 'signature' => $signature, 'doc' => $doc];
+        }
+
+        return $members;
     }
 
     /**
@@ -187,7 +257,8 @@ class PhpSource
      * reading like a keyword stays a name and a source that does not parse says so.
      *
      * @param string $code Source to tokenize
-     * @return array|null
+     * @return array Every token of the source, each holding `id` and `text`, or null when it is
+     *  not valid php
      */
     protected static function tokens(string $code): ?array
     {
@@ -210,7 +281,7 @@ class PhpSource
     /**
      * Whether a keyword opens a declaration, rather than naming something
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index of the keyword
      * @return bool
      */
@@ -234,7 +305,7 @@ class PhpSource
     /**
      * Index of the nearest token carrying something, walking either way
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index to start at
      * @param int $step Direction to walk in
      * @return int
@@ -253,7 +324,7 @@ class PhpSource
     /**
      * Index of the bracket an attribute closes at, so that it can be stepped over whole
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the attribute opens at
      * @return int
      */
@@ -279,7 +350,7 @@ class PhpSource
     /**
      * Index of the semicolon a statement ends at
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the statement opens at
      * @return int
      */
@@ -290,12 +361,9 @@ class PhpSource
 
         for ($at = $index; $at < $count; $at++) {
             $text = $tokens[$at]['text'];
+            $open += self::nesting($text);
 
-            if (in_array($text, ['(', '['], true)) {
-                $open++;
-            } elseif (in_array($text, [')', ']'], true)) {
-                $open--;
-            } elseif ($text === ';' && $open === 0) {
+            if ($text === ';' && $open === 0) {
                 return $at;
             }
         }
@@ -306,7 +374,7 @@ class PhpSource
     /**
      * Index of the brace or semicolon a method declaration ends at
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the method opens at
      * @return int
      */
@@ -335,7 +403,7 @@ class PhpSource
     /**
      * Declaration line of a type, up to the brace its body opens with
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the type opens at
      * @return string
      */
@@ -359,7 +427,7 @@ class PhpSource
     /**
      * Index a declaration opens at once its modifiers are counted in
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index of the keyword the declaration is made with
      * @return int
      */
@@ -385,7 +453,7 @@ class PhpSource
     /**
      * Signature of a method, from its modifiers through to its return type
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the method opens at
      * @return string
      */
@@ -401,7 +469,7 @@ class PhpSource
     /**
      * Source between two tokens, with everything carrying nothing turned into a space
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $start Index to read from
      * @param int $end Index to read up to, itself left out
      * @return string
@@ -428,10 +496,10 @@ class PhpSource
     /**
      * Names a single statement declares, as one statement may declare several
      *
-     * @param array $tokens Tokens of the source
+     * @param array $tokens Tokens of the source, each holding `id` and `text`
      * @param int $index Index the statement opens at
      * @param int $end Index the statement ends at
-     * @return array
+     * @return array Every name the statement declares, as a list of names
      */
     protected static function names(array $tokens, int $index, int $end): array
     {
@@ -440,12 +508,7 @@ class PhpSource
 
         for ($at = $index + 1; $at < $end; $at++) {
             $text = $tokens[$at]['text'];
-
-            if (in_array($text, ['(', '['], true)) {
-                $open++;
-            } elseif (in_array($text, [')', ']'], true)) {
-                $open--;
-            }
+            $open += self::nesting($text);
 
             if ($open !== 0 || $tokens[$at]['id'] !== T_STRING) {
                 continue;
@@ -461,6 +524,24 @@ class PhpSource
         }
 
         return $names === [] ? [$tokens[self::significant($tokens, $index + 1)]['text']] : $names;
+    }
+
+    /**
+     * What a token does to how deeply a statement is nested
+     *
+     * A bracket of either kind opens a nesting the statement has to be read out
+     * of before it ends, and everything else leaves the nesting as it was.
+     *
+     * @param string $text Text of the token
+     * @return int One for a bracket that opens, minus one for one that closes, zero for anything else
+     */
+    protected static function nesting(string $text): int
+    {
+        return match ($text) {
+            '(', '[' => 1,
+            ')', ']' => -1,
+            default => 0,
+        };
     }
 
     /**

@@ -5,6 +5,18 @@ namespace Phuture\App\Command;
 use Phuture\App\Command;
 use Phuture\App\Enum\Schedule;
 
+/**
+ * Command that brings in every single document the source file names.
+ *
+ * An entry of type `doc` names one file to download, such as a readme kept in
+ * somebody else's repository, and the folder of the documentation it is written
+ * into. A single document is a cheap thing to fetch, so these are kept close to
+ * their source and refreshed by the hour.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class UpdateDocs extends Command
 {
     /**

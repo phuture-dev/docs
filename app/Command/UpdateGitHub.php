@@ -4,16 +4,26 @@ namespace Phuture\App\Command;
 
 use Throwable;
 use ZipArchive;
-use SplFileInfo;
 use Milo\Github\Api;
-use FilesystemIterator;
 use Phuture\App\Command;
 use Milo\Github\OAuth\Token;
 use Phuture\App\Enum\Schedule;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
+use Phuture\App\Helper\Directory;
 use Milo\Github\Http\{CurlClient, StreamClient};
 
+/**
+ * Command that brings in every GitHub repository the source file names.
+ *
+ * An entry of type `github` names a repository, the branch, tag or commit to read
+ * it at, and the patterns of the files to leave behind. The repository is
+ * downloaded as an archive into a staging folder, unwrapped, stripped of
+ * everything that is not a document, and only then moved into the documentation,
+ * so that a download failing halfway leaves what is being served untouched.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class UpdateGitHub extends Command
 {
     /**
@@ -176,7 +186,8 @@ class UpdateGitHub extends Command
      * and the branch, tag or commit comes either from the entry or from the url.
      *
      * @param array $entry Entry as the source file writes it
-     * @return array|null Owner, name and reference of the repository
+     * @return array Owner, name and reference of the repository, as `owner`, `name` and
+     *  `reference`, or null when the entry names no repository this command can read
      */
     protected static function repository(array $entry): ?array
     {
@@ -215,7 +226,7 @@ class UpdateGitHub extends Command
      * Patterns an entry excludes, lowercased so that they match however they were written
      *
      * @param array $entry Entry as the source file writes it
-     * @return array
+     * @return array Patterns of the files to leave behind, lowercased
      */
     protected static function exclusions(array $entry): array
     {
@@ -334,13 +345,9 @@ class UpdateGitHub extends Command
      */
     protected static function unwrap(string $path): string
     {
-        $children = array_values(array_diff((array) scandir($path), ['.', '..']));
+        $children = self::children($path);
 
-        if (count($children) === 1 && is_dir($path . DIRECTORY_SEPARATOR . $children[0])) {
-            return $path . DIRECTORY_SEPARATOR . $children[0];
-        }
-
-        return $path;
+        return count($children) === 1 && is_dir($children[0]) ? $children[0] : $path;
     }
 
     /**
@@ -352,32 +359,29 @@ class UpdateGitHub extends Command
      *
      * @param string $checkout Folder the repository was unpacked into
      * @param array $exclusions Patterns of the files to leave behind
-     * @return array
+     * @return array Every document, as its path within the checkout against the file
+     *  it sits at, sorted by that path
+     * @see \Phuture\App\Helper\Directory::files()
      */
     protected static function documents(string $checkout, array $exclusions): array
     {
         $documents = [];
 
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($checkout, FilesystemIterator::SKIP_DOTS)
-        );
-
-        /** @var SplFileInfo $file */
-        foreach ($files as $file) {
-            if (!$file->isFile() || !self::supported($file->getPathname())) {
+        foreach (Directory::files($checkout) as $file) {
+            if (!self::supported($file)) {
                 continue;
             }
 
-            $path = str_replace('\\', '/', substr($file->getPathname(), strlen($checkout) + 1));
+            $path = str_replace('\\', '/', substr($file, strlen($checkout) + 1));
 
             if (self::hidden($path) || self::skipped($path) || self::excluded($path, $exclusions)) {
                 continue;
             }
 
-            $documents[$path] = $file->getPathname();
+            $documents[$path] = $file;
         }
 
-        // The order a filesystem hands its files back in is its own, and a run should read the same every time
+        // A path within the checkout sorts differently from the path the file sits at
         ksort($documents);
 
         return $documents;
@@ -411,13 +415,7 @@ class UpdateGitHub extends Command
         $folders = explode('/', $path);
         array_pop($folders);
 
-        foreach ($folders as $folder) {
-            if (in_array(mb_strtolower($folder), static::SKIPPED_DIRECTORIES, true)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($folders, fn ($folder) => in_array(mb_strtolower($folder), static::SKIPPED_DIRECTORIES, true));
     }
 
     /**
@@ -432,14 +430,8 @@ class UpdateGitHub extends Command
         $path = mb_strtolower($path);
         $name = basename($path);
 
-        foreach ($exclusions as $exclusion) {
-            // A pattern is read against the whole path as well as the bare name, so both ways of naming a file work
-            if (fnmatch($exclusion, $path) || fnmatch($exclusion, $name)) {
-                return true;
-            }
-        }
-
-        return false;
+        // A pattern is read against the whole path as well as the bare name, so both ways of naming a file work
+        return array_any($exclusions, fn ($exclusion) => fnmatch($exclusion, $path) || fnmatch($exclusion, $name));
     }
 
     /**

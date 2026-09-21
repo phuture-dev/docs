@@ -2,28 +2,88 @@
 
 namespace Phuture\App\Helper;
 
+/**
+ * Reads a docblock as it was written.
+ *
+ * A docblock is the comment standing above a class or a member, holding a
+ * description in plain words and the tags that say what goes in and what comes
+ * out. What is read here is handed to the reference, which writes it out as the
+ * prose of a page.
+ *
+ * @copyright Copyright (c) 2026, Advandz Technologies, LLC
+ * @license https://opensource.org/licenses/MIT MIT License
+ * @link https://www.phuture.dev/ Phuture
+ */
 class PhpDoc
 {
     /**
-     * Prefixes of the tags written for a static analyser rather than for a reader
+     * Prefixes of the tags written for a static analyser rather than for a reader.
+     *
+     * A static analyser is a tool that checks code without running it, and these
+     * tags are notes left for one. They say nothing a reader of the documentation
+     * would want, so they never reach the page.
+     *
+     * @var array
      */
     public const IGNORED_TAG_PREFIXES = ['phpstan-', 'psalm-', 'phan-'];
 
     /**
-     * Lines a docblock opens an example with, lowercased
+     * Lines a docblock opens an example with, lowercased.
+     *
+     * A docblock announces the code it is about to show on a line of its own.
+     * Markdown has no reason to read that line as anything but more of the sentence
+     * above it, so it is set in bold and reads as the heading it was meant to be.
+     *
+     * @var array
      */
     public const EXAMPLE_LABELS = ['example:', 'examples:'];
 
     /**
-     * Line an example is fenced with
+     * Shape of the line an example is fenced with.
+     *
+     * Three or more backticks or tildes, indented by no more than three spaces,
+     * which is what markdown itself counts as the opening or closing of a block of
+     * code.
+     *
+     * @var string
      */
     protected const FENCE = '/^\s{0,3}(`{3,}|~{3,})/';
 
     /**
-     * Description and tags of a docblock, as it was written
+     * Shape of the line a tag opens with.
+     *
+     * An at sign at the start of the line, then the name of the tag, then whatever
+     * the tag has to say for itself.
+     *
+     * @var string
+     */
+    protected const TAG = '/^@([a-z][a-z0-9_-]*)[ \t]*(.*)$/i';
+
+    /**
+     * Reads the description and tags of a docblock, as it was written.
+     *
+     * A docblock is the comment written above a class or a method. It opens with a
+     * description in plain words and goes on with tags, which are the lines opening
+     * with an at sign that say what goes in and what comes out.
+     *
+     * An example inside the description is quoted wholesale, so that an at sign
+     * written inside it is read as part of the example rather than as a tag of its
+     * own. A tag runs on until the next one opens, because a reason may take more
+     * than a line to give.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $doc = PhpDoc::parse("/**\n * Does a thing.\n *\n * @return bool Whether it worked\n *&#47;");
+     *
+     * // Returns ['description' => 'Does a thing.', 'tags' => [['name' => 'return', ...]]]
+     * ```
      *
      * @param string|null $comment Docblock to read, or null when a member carries none
-     * @return array
+     * @return array The description in plain words and every tag it carries, as `description` and
+     *  `tags`, where every tag holds `name` and `body`, in the order they were written
+     * @see \Phuture\App\Helper\PhpDoc::parseAll()
      */
     public static function parse(?string $comment): array
     {
@@ -33,41 +93,35 @@ class PhpDoc
 
         $description = [];
         $tags = [];
-        $last = -1;
+        $lastTag = -1;
         $fence = null;
-        $ignoring = false;
+        $isIgnoring = false;
 
         foreach ((array) preg_split('/\R/', self::unwrap($comment)) as $line) {
             $line = (string) $line;
 
-            // An example is quoted wholesale, so that what it holds is never read as a tag of its own
-            if (preg_match(self::FENCE, $line, $matches) === 1) {
-                $mark = $matches[1][0];
-                $fence = $fence === null ? $mark : ($mark === $fence ? null : $fence);
-            } elseif ($fence === null && preg_match('/^@([a-z][a-z0-9_-]*)[ \t]*(.*)$/i', $line, $matches) === 1) {
+            if (!self::isFence($line, $fence) && $fence === null && preg_match(self::TAG, $line, $matches) === 1) {
                 $name = mb_strtolower($matches[1]);
-                $ignoring = self::isIgnored($name);
+                $isIgnoring = self::isIgnored($name);
 
-                if ($ignoring) {
-                    $last = -1;
+                if ($isIgnoring) {
+                    $lastTag = -1;
 
                     continue;
                 }
 
                 $tags[] = ['name' => $name, 'body' => $matches[2]];
-                $last = count($tags) - 1;
+                $lastTag = count($tags) - 1;
 
                 continue;
             }
 
-            // What an ignored tag runs on to is left out with it
-            if ($ignoring) {
+            if ($isIgnoring) {
                 continue;
             }
 
-            // A tag runs on until the next one opens, as a reason may take more than a line
-            if ($last >= 0) {
-                $tags[$last]['body'] = rtrim($tags[$last]['body'] . "\n" . $line);
+            if ($lastTag >= 0) {
+                $tags[$lastTag]['body'] = rtrim($tags[$lastTag]['body'] . "\n" . $line);
 
                 continue;
             }
@@ -79,56 +133,26 @@ class PhpDoc
     }
 
     /**
-     * Description with the line opening an example set in bold
+     * Reads every docblock standing before one declaration as the one docblock they stand in for.
      *
-     * A docblock announces the code it goes on to show on a line of its own,
-     * which markdown has no reason to read as anything but more of the sentence
-     * above it. Set in bold, it reads as the heading of the example it opens.
+     * A class or a method may be written under more than one docblock, an annotation
+     * on a line of its own above the block a reader is meant to see. They all belong
+     * to the same declaration, so their descriptions are read one after another and
+     * their tags are gathered together.
      *
-     * @param array $lines Lines of the description, as they were written
-     * @return array
-     */
-    protected static function labelled(array $lines): array
-    {
-        $count = count($lines);
-        $fence = null;
-
-        foreach ($lines as $index => $line) {
-            if (preg_match(self::FENCE, (string) $line, $matches) === 1) {
-                $mark = $matches[1][0];
-                $fence = $fence === null ? $mark : ($mark === $fence ? null : $fence);
-
-                continue;
-            }
-
-            if ($fence !== null || !in_array(mb_strtolower(trim((string) $line)), self::EXAMPLE_LABELS, true)) {
-                continue;
-            }
-
-            // Only where the example it announces does follow it
-            $next = $index + 1;
-
-            while ($next < $count && trim((string) $lines[$next]) === '') {
-                $next++;
-            }
-
-            if ($next < $count && preg_match(self::FENCE, (string) $lines[$next]) === 1) {
-                $lines[$index] = preg_replace('/^(\s*)(\S.*?)\s*$/', '$1**$2**', (string) $line);
-            }
-        }
-
-        return $lines;
-    }
-
-    /**
-     * Description and tags of every docblock standing before one declaration
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
      *
-     * A declaration may be written under more than one docblock, an annotation on
-     * a line of its own above the block a reader is meant to see. They all belong
-     * to the same declaration, so they are read as one.
+     * $doc = PhpDoc::parseAll(['/** Does a thing. *&#47;', '/** @phpstan-pure *&#47;']);
      *
-     * @param array $comments Docblocks to read, in the order they were written
-     * @return array
+     * // Returns ['description' => 'Does a thing.', 'tags' => []]
+     * ```
+     *
+     * @param array $comments Docblocks to read, as a list of comments in the order they were written
+     * @return array The descriptions read as paragraphs of one, and every tag all of them carry, as
+     *  `description` and `tags`, where every tag holds `name` and `body`
+     * @see \Phuture\App\Helper\PhpDoc::parse()
      */
     public static function parseAll(array $comments): array
     {
@@ -149,10 +173,108 @@ class PhpDoc
     }
 
     /**
-     * Whether a tag is written for a static analyser, and says nothing to a reader
+     * Sets the line opening an example in bold.
+     *
+     * Only a line that really opens one is touched: the words have to be an example
+     * label, the line has to sit outside any block of code, and a block of code has
+     * to follow it, whether straight away or after a blank line.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $lines = PhpDoc::labelled(['Example:', '```php', 'doThing();', '```']);
+     *
+     * // Returns ['**Example:**', '```php', 'doThing();', '```']
+     * ```
+     *
+     * @param array $lines Lines of the description, as they were written
+     * @return array The same lines, with any example label set in bold
+     */
+    protected static function labelled(array $lines): array
+    {
+        $count = count($lines);
+        $fence = null;
+
+        foreach ($lines as $index => $line) {
+            if (self::isFence((string) $line, $fence)) {
+                continue;
+            }
+
+            if ($fence !== null || !in_array(mb_strtolower(trim((string) $line)), self::EXAMPLE_LABELS, true)) {
+                continue;
+            }
+
+            $next = $index + 1;
+
+            while ($next < $count && trim((string) $lines[$next]) === '') {
+                $next++;
+            }
+
+            if ($next < $count && preg_match(self::FENCE, (string) $lines[$next]) === 1) {
+                $lines[$index] = preg_replace('/^(\s*)(\S.*?)\s*$/', '$1**$2**', (string) $line);
+            }
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Tells you whether a line fences a block of code, keeping track of the block it opens or closes.
+     *
+     * A block of code is fenced by a line of backticks or tildes on either side of it,
+     * and is closed only by the mark it was opened with, so that a block of backticks
+     * may hold a line of tildes without ending there.
+     *
+     * The mark of the block being read is passed by reference and is kept up to date:
+     * it becomes the mark a line opens a block with, and becomes null again once the
+     * line closing that block comes around.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $fence = null;
+     * $isFence = PhpDoc::isFence('```php', $fence);
+     *
+     * // Returns true, and leaves $fence holding '`'
+     * ```
+     *
+     * @param string $line Line to read
+     * @param string|null &$fence Mark the block being read is fenced with, or null while no block is
+     *  open (this will be modified directly)
+     * @return bool Returns true when the line fences a block, false when it is a line of the docblock
+     */
+    protected static function isFence(string $line, ?string &$fence): bool
+    {
+        if (preg_match(self::FENCE, $line, $matches) !== 1) {
+            return false;
+        }
+
+        $mark = $matches[1][0];
+        $fence = $fence === null ? $mark : ($mark === $fence ? null : $fence);
+
+        return true;
+    }
+
+    /**
+     * Tells you whether a tag is written for a static analyser.
+     *
+     * A static analyser is a tool that checks code without running it. Its tags are
+     * notes left for the tool rather than for a reader, and are named after it, so
+     * the name is all that has to be looked at.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $isIgnored = PhpDoc::isIgnored('phpstan-consistent-constructor');
+     *
+     * // Returns true
+     * ```
      *
      * @param string $name Name of the tag, without its at sign
-     * @return bool
+     * @return bool Returns true when the tag says nothing to a reader, false otherwise
      */
     protected static function isIgnored(string $name): bool
     {
@@ -163,17 +285,32 @@ class PhpDoc
     }
 
     /**
-     * Bodies of every tag of one name, in the order they were written
+     * Lists the bodies of every tag of one name, in the order they were written.
      *
-     * @param array $doc Docblock as it was read
-     * @param string $name Name of the tag, without its at sign
-     * @return array
+     * A docblock may carry the same tag several times, one `@param` for every
+     * parameter a method takes, so every one of them is handed back rather than only
+     * the first. A tag the docblock never carries answers with an empty list.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $bodies = PhpDoc::tagged($doc, 'param');
+     *
+     * // Returns ['string $name The name of the method', 'array $arguments The parameters']
+     * ```
+     *
+     * @param array $doc Docblock as it was read, holding `description` and `tags`
+     * @param string $name Name of the tag to look for, without its at sign
+     * @return array What every tag of that name has to say, as a list of bodies in the order they
+     *  were written
+     * @see \Phuture\App\Helper\PhpDoc::parse()
      */
     public static function tagged(array $doc, string $name): array
     {
         $bodies = [];
 
-        foreach ($doc['tags'] ?? [] as $tag) {
+        foreach ($doc['tags'] as $tag) {
             if ($tag['name'] === $name) {
                 $bodies[] = $tag['body'];
             }
@@ -183,10 +320,25 @@ class PhpDoc
     }
 
     /**
-     * Type, name and description a parameter tag names
+     * Reads the type, name and description a parameter tag names.
      *
-     * @param string $body Body of the tag
-     * @return array
+     * A `@param` tag is written as a type, then the name of the parameter, then what
+     * it is for. The type may be left out, and a parameter taking any number of
+     * values is written with three dots in front of its name.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $parameter = PhpDoc::parameter('string $name The name to look up');
+     *
+     * // Returns ['type' => 'string', 'name' => '$name', 'description' => 'The name to look up']
+     * ```
+     *
+     * @param string $body What the tag has to say, without its name
+     * @return array The type, the name and what the parameter is for, as `type`, `name` and
+     *  `description`, each empty when the tag does not name it
+     * @see \Phuture\App\Helper\PhpDoc::typed()
      */
     public static function parameter(string $body): array
     {
@@ -197,17 +349,31 @@ class PhpDoc
         }
 
         return [
-            'type' => $matches['type'] ?? '',
+            'type' => $matches['type'],
             'name' => $matches['name'],
             'description' => trim($matches['description']),
         ];
     }
 
     /**
-     * Type a tag opens with, and whatever it says after it
+     * Reads the type a tag opens with, and whatever it says after it.
      *
-     * @param string $body Body of the tag
-     * @return array
+     * A `@return` or a `@throws` tag is written as a type and then what it means, so
+     * the first word is the type and the rest is the description. A tag with nothing
+     * to say answers with two empty strings.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $return = PhpDoc::typed('bool Whether the file was written');
+     *
+     * // Returns ['type' => 'bool', 'description' => 'Whether the file was written']
+     * ```
+     *
+     * @param string $body What the tag has to say, without its name
+     * @return array The type the tag opens with and what it means, as `type` and `description`
+     * @see \Phuture\App\Helper\PhpDoc::parameter()
      */
     public static function typed(string $body): array
     {
@@ -223,14 +389,25 @@ class PhpDoc
     }
 
     /**
-     * Docblock without the framing it is written inside
+     * Strips a docblock of the framing it is written inside.
      *
-     * One space behind the asterisk, or behind the opening of a docblock written on
-     * a single line, belongs to the frame. Every other one is indentation the author
-     * meant, which an example needs to keep to stay an example.
+     * The framing is the opening slash and asterisks, the asterisk down the side of
+     * every line, and the closing asterisk and slash. One space behind the asterisk,
+     * or behind the opening of a docblock written on a single line, belongs to that
+     * framing. Every other space is indentation the author meant, which an example
+     * needs to keep to stay an example.
      *
-     * @param string $comment Docblock to strip
-     * @return string
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\PhpDoc;
+     *
+     * $text = PhpDoc::unwrap("/**\n * Does a thing.\n *&#47;");
+     *
+     * // Returns 'Does a thing.'
+     * ```
+     *
+     * @param string $comment Docblock to strip, as it was written
+     * @return string What the docblock says, with its blank opening and closing lines taken off
      */
     protected static function unwrap(string $comment): string
     {

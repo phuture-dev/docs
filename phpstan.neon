@@ -1,0 +1,11 @@
+parameters:
+    level: 6
+    paths:
+        - app
+    bootstrapFiles:
+        - tests/constants.php
+    ignoreErrors:
+        # The shape of an array is written into the description of the tag that carries it,
+        # rather than into the type, so that a docblock reads as prose
+        -
+            identifier: missingType.iterableValue

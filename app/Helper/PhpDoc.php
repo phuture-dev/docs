@@ -383,7 +383,7 @@ class PhpDoc
             return ['type' => '', 'description' => ''];
         }
 
-        $parts = preg_split('/\s+/', $body, 2);
+        $parts = preg_split('/\s+/', $body, 2) ?: [$body];
 
         return ['type' => $parts[0], 'description' => trim($parts[1] ?? '')];
     }

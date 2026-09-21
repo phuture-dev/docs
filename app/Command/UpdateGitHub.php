@@ -198,7 +198,7 @@ class UpdateGitHub extends Command
             $source = $matches[1];
         }
 
-        $segments = explode('/', trim(preg_replace('/\.git$/i', '', $source), '/'));
+        $segments = explode('/', trim(preg_replace('/\.git$/i', '', $source) ?? $source, '/'));
 
         if (count($segments) < 2) {
             return null;

@@ -11,4 +11,4 @@
 /node_modules/
 composer.lock
 package-lock.json
-.php-cs-fixer.cache/tests/temp/
+.php-cs-fixer.cache

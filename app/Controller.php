@@ -327,7 +327,8 @@ class Controller extends AbstractController
      */
     protected static function currentPath(): string
     {
-        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $path = parse_url(is_string($uri) ? $uri : '/', PHP_URL_PATH);
 
         return rtrim((string) $path, '/') ?: '/';
     }

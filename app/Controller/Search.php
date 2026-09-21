@@ -50,7 +50,8 @@ class Search extends Controller
      */
     public function index(): void
     {
-        $query = trim((string) ($_GET['q'] ?? ''));
+        $asked = $_GET['q'] ?? '';
+        $query = is_string($asked) ? trim($asked) : '';
         $results = $query === '' ? [] : SearchIndex::results($query);
 
         if (($_GET['format'] ?? '') === self::JSON_FORMAT) {

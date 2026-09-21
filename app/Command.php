@@ -425,7 +425,9 @@ abstract class Command
             return null;
         }
 
-        return self::climate()->progress()->total($total);
+        $progress = self::climate()->progress();
+
+        return $progress instanceof Progress ? $progress->total($total) : null;
     }
 
     /**

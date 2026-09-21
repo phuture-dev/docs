@@ -208,8 +208,12 @@ class Search
         $fingerprint = self::fingerprint($documents);
         $cached = is_file($cachePath) ? json_decode((string) file_get_contents($cachePath), true) : null;
 
-        if (is_array($cached) && ($cached['fingerprint'] ?? null) === $fingerprint) {
-            return self::$index = $cached['entries'];
+        $entries = is_array($cached) && ($cached['fingerprint'] ?? null) === $fingerprint
+            ? $cached['entries'] ?? null
+            : null;
+
+        if (is_array($entries)) {
+            return self::$index = $entries;
         }
 
         $entries = array_values(array_filter(array_map(self::entry(...), $documents)));

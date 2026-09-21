@@ -66,13 +66,6 @@ composer cron
 | `bin/cron`      | Entry point of the scheduled run that syncs the documentation   |
 | `source.json`   | The documents and repositories the documentation is brought in from |
 
-## Testing
-
-```bash
-composer test
-```
-
-This runs [PHPStan](https://phpstan.org/) at level 6, the [Nette Tester](https://tester.nette.org/) suite, and [PHP CS Fixer](https://cs.symfony.com/) over `app/`.
 
 ## Contributing
 

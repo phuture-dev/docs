@@ -94,9 +94,15 @@ class Document
             return null;
         }
 
+        $found = scandir($directory);
+
+        if ($found === false) {
+            return null;
+        }
+
         $files = [];
 
-        foreach ((array) scandir($directory) as $file) {
+        foreach ($found as $file) {
             if (is_file($directory . DS . $file)) {
                 $files[strtolower($file)] = $file;
             }

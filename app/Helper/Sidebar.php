@@ -215,7 +215,15 @@ class Sidebar
                 continue;
             }
 
-            $link = array_find($child->children(), fn ($inline) => $inline instanceof Link);
+            $link = null;
+
+            foreach ($child->children() as $inline) {
+                if ($inline instanceof Link) {
+                    $link = $inline;
+
+                    break;
+                }
+            }
 
             $entry['url'] = $link instanceof Link ? $link->getUrl() : '';
             $entry['label'] = Markdown::text($link ?? $child) ?: $entry['url'];

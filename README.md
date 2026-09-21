@@ -15,7 +15,7 @@ This repository holds the documentation of the **Phuture Framework** together wi
 
 Every page lives in the `docs/` folder as plain markdown. Some of it is written here by hand, and the rest is brought in from the repositories of the packages themselves, so that a readme kept beside the code it describes is the same readme a reader finds on the site.
 
-**Prefer to read the documentation right out of GitHub?** Start at **[docs/index.md](docs/index.md)** and follow the links from there — the whole of `docs/` is readable as markdown, exactly as it is served.
+**The `docs/` folder keeps itself up to date.** A workflow runs every night, reading `source.json`, bringing in every document and repository it names, and writing the reference pages again from the php sources that came with them. A page changed in a package repository reaches the site within a day, and anything committed under `docs/` by that run was written by it rather than by hand.
 
 > **Phuture is in Alpha and under active development.** The documentation tracks the `main` branch of each package, so it describes what exists today rather than what a tagged release holds.
 
@@ -61,7 +61,7 @@ The site is served out of the `public/` folder. Point the document root of the d
 
 Where the document root cannot be moved, which is what shared hosting such as cPanel gives, put the project inside the folder that is already published, `public_html` or a folder of it. The `.htaccess` in the project root serves the site out of `public/` wherever it sits, and every url the site writes is carried under that folder. Nothing outside `public/` is reachable either way.
 
-Whichever way it is installed, `cache/` has to be writable by the web server, and `bin/cron` is what keeps the documentation up to date:
+Whichever way it is installed, `cache/` has to be writable by the web server. An install that pulls from this repository is served the pages the nightly workflow already committed, and one that reads its own sources keeps them up to date with `bin/cron`:
 
 ```
 * * * * * /usr/local/bin/php /home/user/public_html/bin/cron

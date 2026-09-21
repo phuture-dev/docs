@@ -1,0 +1,62 @@
+name: Documentation
+
+# The documentation is brought in from the repositories the sources name, so it goes
+# out of date on its own as those repositories move. This run reads them every night
+# and commits whatever came back different, which is what keeps `docs/` current
+# without anybody touching this repository by hand.
+
+on:
+  schedule:
+    # Every day at 04:00 UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two runs at once would download into the same folders and clear them from under one
+# another, which is the same reason the command itself holds a lock while it works
+concurrency:
+  group: documentation
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Update the documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v5
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, zip, tokenizer
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --no-progress
+
+      - name: Bring the documentation up to date
+        env:
+          # The api asks every caller who they are, and answers a named one far more often
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: php bin/cron --force --verbose
+
+      - name: Commit whatever changed
+        run: |
+          # Nothing is committed when the run brought back what was already here
+          if [ -z "$(git status --porcelain -- docs)" ]; then
+            echo 'The documentation is already up to date.'
+
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git add -A docs
+          git commit -m 'Updated documentation'
+          git push

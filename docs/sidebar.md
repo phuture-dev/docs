@@ -19,6 +19,7 @@
       - [Arrays](/coherence/src/type/arrays)
       - [Dates](/coherence/src/type/dates)
       - [Files](/coherence/src/type/files)
+      - [Html](/coherence/src/type/html)
       - [Numbers](/coherence/src/type/numbers)
       - [Strings](/coherence/src/type/strings)
     - [Enums](/coherence/src/enum/arraycomparator)

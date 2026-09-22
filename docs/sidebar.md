@@ -40,6 +40,7 @@
       - [Dateable](/coherence/src/interface/dateable)
       - [Exception](/coherence/src/interface/exception)
       - [Fileable](/coherence/src/interface/fileable)
+      - [Htmlable](/coherence/src/interface/htmlable)
       - [Numberable](/coherence/src/interface/numberable)
       - [Stringable](/coherence/src/interface/stringable)
     - [Exceptions](/coherence/src/exception/badmethodcallexception)

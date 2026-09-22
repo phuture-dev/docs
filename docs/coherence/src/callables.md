@@ -272,7 +272,7 @@ $result2 = $closure(); // Error: $this is not available
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$closure` | `Closure` | The closure to bind to an object |
-| `$class` | `object|null` | The object to bind to, or null to unbind |
+| `$class` | `object\|null` | The object to bind to, or null to unbind |
 
 **Returns** `Closure` — A new closure bound to the specified object
 
@@ -481,7 +481,7 @@ $result3 = $customCurry(5)(10); // Returns 15 (ignores the third parameter)
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$callback` | `callable` | The function to curry |
-| `$arity` | `int|null` | The number of arguments expected (null to auto-detect) |
+| `$arity` | `int\|null` | The number of arguments expected (null to auto-detect) |
 
 **Returns** `Closure` — A curried version of the function
 
@@ -637,7 +637,7 @@ $result2 = $checkNumber(5); // Returns "5 is odd"
 | --- | --- | --- |
 | `$condition` | `callable` | The function that determines which callback to execute |
 | `$then` | `callable` | The function to execute when the condition is true |
-| `$else` | `callable|null` | The function to execute when the condition is false (optional) |
+| `$else` | `callable\|null` | The function to execute when the condition is false (optional) |
 
 **Returns** `Closure` — A function that chooses between two callbacks based on a condition
 
@@ -889,7 +889,7 @@ $result5 = $permanentCache(5); // Cached until script ends
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$callback` | `callable` | The function to memoize |
-| `$ttl` | `int|null` | Time-to-live in seconds, defaults to CACHE_TTL, null for runtime permanent cache |
+| `$ttl` | `int\|null` | Time-to-live in seconds, defaults to CACHE_TTL, null for runtime permanent cache |
 
 **Returns** `Closure` — A memoized version of the function with TTL support
 
@@ -1730,8 +1730,8 @@ $transactional = Callables::wrap($query, $beginTransaction, $commit);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$callback` | `callable` | The main function to wrap |
-| `$before` | `callable|null` | Optional function to execute before the main function |
-| `$after` | `callable|null` | Optional function to execute after the main function (receives result, then args) |
+| `$before` | `callable\|null` | Optional function to execute before the main function |
+| `$after` | `callable\|null` | Optional function to execute after the main function (receives result, then args) |
 
 **Returns** `Closure` — A function that wraps the main function with optional hooks
 

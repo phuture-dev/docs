@@ -2193,7 +2193,7 @@ Strings::mask('1234567890', '*', -4); // '123456****'
 | `$string` | `string` | The input string to mask |
 | `$mask` | `string` | The mask character to use (default: '*') |
 | `$offset` | `int` | The start position to begin masking (negative counts from the end) |
-| `$length` | `int|null` | The number of characters to mask; must be zero or greater (null masks to the end) |
+| `$length` | `int\|null` | The number of characters to mask; must be zero or greater (null masks to the end) |
 | `$encoding` | `string` | The character encoding to use (default: 'UTF-8') |
 
 **Returns** `string` — The masked string
@@ -2356,7 +2356,7 @@ Strings::numberFormat(1000000); // '1,000,000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `float|int` | The number to format |
+| `$number` | `float\|int` | The number to format |
 | `$decimals` | `int` | The number of decimal places (default: 0) |
 | `$decimalSeparator` | `string` | The character for the decimal point (default: '.') |
 | `$thousandsSeparator` | `string` | The character for thousands grouping (default: ',') |
@@ -2758,7 +2758,7 @@ Strings::replaceAt('hello world', '', 5, 6); // 'hello'
 | `$string` | `string` | The input string to modify |
 | `$replacement` | `string` | The text to insert at the given position |
 | `$position` | `int` | The character index at which to begin replacement (negative counts from end) |
-| `$length` | `int|null` | The number of characters to replace (null replaces to end of string) |
+| `$length` | `int\|null` | The number of characters to replace (null replaces to end of string) |
 | `$encoding` | `string` | The character encoding to use (default: 'UTF-8') |
 
 **Returns** `string` — The modified string
@@ -3033,7 +3033,7 @@ Strings::slice('hello world', -5); // 'world'
 | --- | --- | --- |
 | `$string` | `string` | The input string to slice |
 | `$start` | `int` | The starting position (negative counts from the end) |
-| `$length` | `int|null` | The number of characters to return (null returns to the end) |
+| `$length` | `int\|null` | The number of characters to return (null returns to the end) |
 | `$encoding` | `string` | The character encoding to use (default: 'UTF-8') |
 
 **Returns** `string` — The extracted substring
@@ -3552,7 +3552,7 @@ Strings::trim('***hello***', '*'); // 'hello'
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$string` | `string` | The input string to trim |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `string` — The trimmed string
 
@@ -3583,7 +3583,7 @@ Strings::trimLeft('***hello***', '*'); // 'hello***'
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$string` | `string` | The input string to trim |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `string` — The left-trimmed string
 
@@ -3613,7 +3613,7 @@ Strings::trimRight('***hello***', '*'); // '***hello'
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$string` | `string` | The input string to trim |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `string` — The right-trimmed string
 

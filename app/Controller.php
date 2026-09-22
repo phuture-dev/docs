@@ -130,6 +130,8 @@ class Controller extends AbstractController
      */
     protected static function renderJson(array $data): void
     {
+        self::headers();
+
         if (!headers_sent()) {
             header('Content-Type: application/json; charset=utf-8');
         }
@@ -209,9 +211,50 @@ class Controller extends AbstractController
             return false;
         }
 
+        self::headers();
+
         echo $output;
 
         return true;
+    }
+
+    /**
+     * Says what a browser is allowed to do with the answer.
+     *
+     * A page of the documentation is text and nothing else: everything it draws
+     * comes from this site, and the pictures it carries are the badges a readme
+     * links to. Saying so leaves a document that somehow carried something
+     * executable with nowhere to run it, and keeps the site out of a frame on
+     * somebody else's page.
+     *
+     * The headers go out once per answer, before anything is printed, and only
+     * where there is still a chance to send them.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Controller;
+     *
+     * Controller::headers();
+     *
+     * // The answer now carries its content security policy
+     * ```
+     *
+     * @return void
+     */
+    protected static function headers(): void
+    {
+        if (headers_sent()) {
+            return;
+        }
+
+        header(
+            "Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self';"
+            . " img-src 'self' https: data:; font-src 'self'; connect-src 'self'; object-src 'none';"
+            . " frame-src 'none'; frame-ancestors 'self'; form-action 'self'; base-uri 'self'"
+        );
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
     }
 
     /**

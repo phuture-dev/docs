@@ -3,7 +3,7 @@
 `Phuture\Coherence\Type\Arrays`
 
 ```php
-class Arrays extends FluentClass implements Arrayable, ArrayAccess, Countable, IteratorAggregate
+class Arrays extends FluentClass implements Arrayable, Countable, IteratorAggregate
 ```
 
 A fluent, array-like wrapper that provides object-oriented array manipulation.
@@ -64,8 +64,8 @@ Transforms an array into an associative array according to a specified key.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$key` | `string|int` | The field to use as the associative array key |
-| `$value` | `string|int|null` | Optional field to use as the value. If null, uses the entire item |
+| `$key` | `string\|int` | The field to use as the associative array key |
+| `$value` | `string\|int\|null` | Optional field to use as the value. If null, uses the entire item |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -116,8 +116,8 @@ Extracts a single column from a multi-dimensional array.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$column` | `int|string|null` | The column name or index to extract |
-| `$index` | `int|string|null` | Optional column to use as keys in the result (default: null) |
+| `$column` | `int\|string\|null` | The column name or index to extract |
+| `$index` | `int\|string\|null` | Optional column to use as keys in the result (default: null) |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -280,7 +280,7 @@ Filters elements of an array using a callback function.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$callback` | `callable|null` | The callback function to use for filtering (default: null) |
+| `$callback` | `callable\|null` | The callback function to use for filtering (default: null) |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -355,7 +355,7 @@ Groups array elements by a specified key or callback function.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$groupBy` | `callable|string` | The key name to group by, or a callback function |
+| `$groupBy` | `callable\|string` | The key name to group by, or a callback function |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -373,7 +373,7 @@ Inserts key-value pairs into the array immediately after a specified key.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$key` | `string|int` | The key after which the new items will be inserted |
+| `$key` | `string\|int` | The key after which the new items will be inserted |
 | `$items` | `array` | Associative array of key-value pairs to insert |
 
 **Returns** `self` — An instance of the Arrays class with the updated array
@@ -393,7 +393,7 @@ Inserts key-value pairs into the array immediately before a specified key.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$key` | `string|int` | The key before which the new items will be inserted |
+| `$key` | `string\|int` | The key before which the new items will be inserted |
 | `$items` | `array` | Associative array of key-value pairs to insert |
 
 **Returns** `self` — An instance of the Arrays class with the updated array
@@ -787,7 +787,7 @@ Removes a key-value pair from the array.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$key` | `string|int|array` | The key to remove (string/int for a top-level key, array for a nested path) |
+| `$key` | `string\|int\|array` | The key to remove (string/int for a top-level key, array for a nested path) |
 
 **Returns** `self` — An instance of the Arrays class with the key removed
 
@@ -805,8 +805,8 @@ Rename keys in the array.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$oldKey` | `string|int|array` | Old key name or array of key mappings |
-| `$newKey` | `string|int` | New key name (when $oldKey is not an array) |
+| `$oldKey` | `string\|int\|array` | Old key name or array of key mappings |
+| `$newKey` | `string\|int` | New key name (when $oldKey is not an array) |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -895,7 +895,7 @@ Extracts a slice of the array.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$offset` | `int` | The starting offset of the slice |
-| `$length` | `int|null` | The maximum length of the slice (default: null for all remaining elements) |
+| `$length` | `int\|null` | The maximum length of the slice (default: null for all remaining elements) |
 | `$preserveKeys` | `bool` | Whether to preserve original keys (default: false) |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
@@ -915,7 +915,7 @@ Sort the array values using a callback function.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$reverse` | `bool` | Whether to sort in reverse order |
-| `$callback` | `callable|null` | Custom comparison function |
+| `$callback` | `callable\|null` | Custom comparison function |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -934,7 +934,7 @@ Sort an associative array by values while maintaining key association.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$reverse` | `bool` | Whether to sort in reverse order |
-| `$callback` | `callable|null` | Custom comparison function |
+| `$callback` | `callable\|null` | Custom comparison function |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -952,7 +952,7 @@ Sort the array by a given key or multiple keys.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$criteria` | `string|array|callable` | The key(s) to sort by, or a callback |
+| `$criteria` | `string\|array\|callable` | The key(s) to sort by, or a callback |
 | `$reverse` | `bool` | Whether to sort in descending order |
 | `$flags` | `int` | Sort flags for natural sorting |
 
@@ -973,7 +973,7 @@ Sort the array by keys.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$reverse` | `bool` | Whether to sort in reverse order |
-| `$callback` | `callable|null` | Custom comparison function for keys |
+| `$callback` | `callable\|null` | Custom comparison function for keys |
 
 **Returns** `self` — An instance of the Arrays class with the transformed array
 
@@ -1010,7 +1010,7 @@ Removes a portion of the array and optionally replaces it with new elements.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$offset` | `int` | The position to start removing elements (negative counts from the end) |
-| `$length` | `int|null` | Number of elements to remove (default: null removes everything from offset onward) |
+| `$length` | `int\|null` | Number of elements to remove (default: null removes everything from offset onward) |
 | `$replacement` | `mixed` | Elements to insert at the offset position (default: empty array) |
 
 **Returns** `self` — An instance of the Arrays class with the modified array
@@ -1098,7 +1098,7 @@ Applies a callback when a condition is false, preserving the fluent chain regard
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$condition` | `bool|callable` | A boolean value or a callback that receives the array data and returns a bool The callback has the signature `function (array $data): bool` |
+| `$condition` | `bool\|callable` | A boolean value or a callback that receives the array data and returns a bool The callback has the signature `function (array $data): bool` |
 | `$callback` | `callable` | The callback to execute when the condition is false The callback has the signature `function (self $array): void` |
 
 **Returns** `self` — The current instance for continued chaining
@@ -1131,7 +1131,7 @@ Applies a callback when a condition is true, preserving the fluent chain regardl
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$condition` | `bool|callable` | A boolean value or a callback that receives the array data and returns a bool The callback has the signature `function (array $data): bool` |
+| `$condition` | `bool\|callable` | A boolean value or a callback that receives the array data and returns a bool The callback has the signature `function (array $data): bool` |
 | `$callback` | `callable` | The callback to execute when the condition is true The callback has the signature `function (self $array): void` |
 
 **Returns** `self` — The current instance for continued chaining

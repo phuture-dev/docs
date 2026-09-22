@@ -61,7 +61,7 @@ The site is served out of the `public/` folder. Point the document root of the d
 
 Where the document root cannot be moved, which is what shared hosting such as cPanel gives, put the project inside the folder that is already published, `public_html` or a folder of it. The `.htaccess` in the project root serves the site out of `public/` wherever it sits, and every url the site writes is carried under that folder. Nothing outside `public/` is reachable either way.
 
-Whichever way it is installed, `cache/` has to be writable by the web server. An install that pulls from this repository is served the pages the nightly workflow already committed, and one that reads its own sources keeps them up to date with `bin/cron`:
+Whichever way it is installed, `cache/` has to be writable by the web server, and what goes wrong is written to the php error log rather than to the page — set `APP_DEBUG=1` in the environment to see it on the page while working on the site. An install that pulls from this repository is served the pages the nightly workflow already committed, and one that reads its own sources keeps them up to date with `bin/cron`:
 
 ```
 * * * * * /usr/local/bin/php /home/user/public_html/bin/cron

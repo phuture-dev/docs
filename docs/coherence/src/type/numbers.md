@@ -55,7 +55,7 @@ Adds a number to the wrapped value using BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to add |
+| `$value` | `int\|float` | The value to add |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -73,7 +73,7 @@ Adds a percentage of the wrapped value to itself using BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$percentage` | `int|float` | The percentage to add (e.g. 20 for 20%) |
+| `$percentage` | `int\|float` | The percentage to add (e.g. 20 for 20%) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -139,8 +139,8 @@ Restricts the wrapped number to be within the given minimum and maximum bounds.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$min` | `int|float` | The lower bound |
-| `$max` | `int|float` | The upper bound |
+| `$min` | `int\|float` | The lower bound |
+| `$max` | `int\|float` | The upper bound |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -158,7 +158,7 @@ Compares the wrapped number with another and returns their relative order.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to compare against |
+| `$value` | `int\|float` | The value to compare against |
 
 **Returns** `int` — -1 when wrapped < $value, 0 when equal, 1 when wrapped > $value
 
@@ -216,7 +216,7 @@ Divides the wrapped number by another using BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The divisor (must not be zero) |
+| `$value` | `int\|float` | The divisor (must not be zero) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -303,7 +303,7 @@ Formats the wrapped number with grouped thousands and a specified precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$precision` | `int|null` | The number of decimal places (default: null — preserve original) |
+| `$precision` | `int\|null` | The number of decimal places (default: null — preserve original) |
 
 **Returns** `string` — The formatted number string
 
@@ -340,7 +340,7 @@ Returns the higher of the wrapped number and another.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to compare against |
+| `$value` | `int\|float` | The value to compare against |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -358,7 +358,7 @@ Returns the lower of the wrapped number and another.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to compare against |
+| `$value` | `int\|float` | The value to compare against |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -376,7 +376,7 @@ Computes the modulus of the wrapped number divided by another using BCMath.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The divisor (must not be zero) |
+| `$value` | `int\|float` | The divisor (must not be zero) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -394,7 +394,7 @@ Multiplies the wrapped number by another using BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to multiply by |
+| `$value` | `int\|float` | The value to multiply by |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -442,7 +442,7 @@ Replaces the wrapped value with the computed percentage amount.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$percentage` | `int|float` | The percentage to calculate (e.g. 20 for 20%) |
+| `$percentage` | `int\|float` | The percentage to calculate (e.g. 20 for 20%) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -514,7 +514,7 @@ Subtracts a number from the wrapped value using BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float` | The value to subtract |
+| `$value` | `int\|float` | The value to subtract |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -532,7 +532,7 @@ Subtracts a percentage of the wrapped value from itself using BCMath for precisi
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$percentage` | `int|float` | The percentage to subtract (e.g. 20 for 20%) |
+| `$percentage` | `int\|float` | The percentage to subtract (e.g. 20 for 20%) |
 
 **Returns** `self` — Returns the current instance for method chaining
 

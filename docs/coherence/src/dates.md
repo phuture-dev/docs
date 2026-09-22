@@ -91,7 +91,7 @@ $result = Dates::addBusinessDays($date, 3); // 2026-04-27 (Monday)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$days` | `int` | The number of business days to add (negative moves backward) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the business days added
@@ -122,7 +122,7 @@ $result = Dates::addDays($date, 10); // '2026-05-01'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$days` | `int` | The number of days to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the days added
@@ -152,7 +152,7 @@ $result = Dates::addHours($date, 3); // '2026-04-21 17:30:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$hours` | `int` | The number of hours to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the hours added
@@ -182,7 +182,7 @@ $result = Dates::addMinutes($date, 45); // '2026-04-21 15:15:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$minutes` | `int` | The number of minutes to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the minutes added
@@ -214,7 +214,7 @@ $result = Dates::addMonths($date, 3); // '2026-04-15'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$months` | `int` | The number of months to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the months added
@@ -244,7 +244,7 @@ $result = Dates::addSeconds($date, 90); // '2026-04-21 14:31:30'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$seconds` | `int` | The number of seconds to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the seconds added
@@ -274,7 +274,7 @@ $result = Dates::addWeeks($date, 2); // '2026-05-05'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$weeks` | `int` | The number of weeks to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the weeks added
@@ -304,7 +304,7 @@ $result = Dates::addYears($date, 5); // '2031-04-21'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$years` | `int` | The number of years to add (use a negative value to subtract) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the years added
@@ -341,7 +341,7 @@ $meeting = Dates::create(2026, 4, 21, 14, 30, 0, 'Europe/Paris'); // 14:30 Paris
 | `$hour` | `int` | The hour from 0 to 23 (default: 0) |
 | `$minute` | `int` | The minute from 0 to 59 (default: 0) |
 | `$second` | `int` | The second from 0 to 59 (default: 0) |
-| `$timezone` | `string|null` | A valid PHP timezone identifier (default: null — system default) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier (default: null — system default) |
 
 **Returns** `DateTimeImmutable` — The constructed date/time value
 
@@ -377,8 +377,8 @@ Dates::diffInBusinessDays($start, $end); // 4 (Tue, Wed, Thu, Fri)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of business days between the two values (always non-negative)
 
@@ -409,8 +409,8 @@ Dates::diffInDays($start, $end); // 20
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete days between the two values (always non-negative)
 
@@ -441,8 +441,8 @@ Dates::diffInHours($start, $end); // 12
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete hours between the two values (always non-negative)
 
@@ -473,8 +473,8 @@ Dates::diffInMinutes($start, $end); // 90
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete minutes between the two values (always non-negative)
 
@@ -505,8 +505,8 @@ Dates::diffInMonths($start, $end); // 2 (not 3, because April 10 < January 15 in
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete months between the two values (always non-negative)
 
@@ -537,8 +537,8 @@ Dates::diffInSeconds($start, $end); // 90
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete seconds between the two values (always non-negative)
 
@@ -569,8 +569,8 @@ Dates::diffInWeeks($start, $end); // 2
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete weeks between the two values (always non-negative)
 
@@ -601,8 +601,8 @@ Dates::diffInYears($start, $end); // 5
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `int` — The number of complete years between the two values (always non-negative)
 
@@ -630,7 +630,7 @@ $result = Dates::endOfDay($date); // '2026-04-21 23:59:59'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at 23:59:59 on the same calendar day
 
@@ -658,7 +658,7 @@ $result = Dates::endOfMonth($date); // '2026-04-30 23:59:59'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at the last day of the month at 23:59:59
 
@@ -686,7 +686,7 @@ $result = Dates::endOfWeek($date); // '2026-04-26 23:59:59' (Sunday)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at Sunday 23:59:59 of the same week
 
@@ -714,7 +714,7 @@ $result = Dates::endOfYear($date); // '2026-12-31 23:59:59'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at December 31st of the same year at 23:59:59
 
@@ -744,8 +744,8 @@ Dates::equals($utc, $ny); // true — same moment, different timezones
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `bool` — Returns true if both values represent the same point in time
 
@@ -834,7 +834,7 @@ Dates::format($date, '[Today is] dddd'); // 'Today is Tuesday'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to format |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to format |
 | `$format` | `string` | The format string using either PHP date() characters or day.js-style tokens (auto-detected) |
 
 **Returns** `string` — The formatted date/time string
@@ -873,7 +873,7 @@ $date = Dates::fromFormat('YYYY-MM-DD HH:mm:ss', '2026-04-21 14:30:00', 'Europe/
 | --- | --- | --- |
 | `$format` | `string` | The format pattern using either PHP date() characters or day.js-style tokens (auto-detected) |
 | `$dateString` | `string` | The date string to parse according to the format |
-| `$timezone` | `string|null` | A valid PHP timezone identifier (default: null — system default) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier (default: null — system default) |
 
 **Returns** `DateTimeImmutable` — The parsed date and time value
 
@@ -929,8 +929,8 @@ Dates::fromRelative('tomorrow');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$expression` | `string` | A relative date expression (e.g. '+2 days', 'in 3 hours', 'yesterday') |
-| `$relativeTo` | `DateTimeImmutable|string|null` | The reference date/time to resolve against. Pass null to use the current moment (default: null) |
-| `$timezone` | `string|null` | A valid PHP timezone identifier used only when $relativeTo is null and the current moment is needed (default: null — UTC) |
+| `$relativeTo` | `DateTimeImmutable\|string\|null` | The reference date/time to resolve against. Pass null to use the current moment (default: null) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier used only when $relativeTo is null and the current moment is needed (default: null — UTC) |
 
 **Returns** `DateTimeImmutable` — The absolute date/time that the expression resolves to
 
@@ -965,7 +965,7 @@ $date = Dates::fromTimestamp(1745236800, 'America/Los_Angeles'); // same moment,
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$timestamp` | `int` | The number of seconds since the Unix epoch (1970-01-01 00:00:00 UTC) |
-| `$timezone` | `string|null` | A valid PHP timezone identifier for display (default: null — UTC) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier for display (default: null — UTC) |
 
 **Returns** `DateTimeImmutable` — The date and time represented by the timestamp
 
@@ -995,7 +995,7 @@ Dates::getDay($date); // 21
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The day of the month as an integer from 1 to 31
 
@@ -1025,7 +1025,7 @@ Dates::getDayOfWeek($date); // 2
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The ISO 8601 day of the week: 1 (Monday) through 7 (Sunday)
 
@@ -1054,7 +1054,7 @@ Dates::getDayOfYear($date); // 31
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The day of the year as an integer from 1 to 366
 
@@ -1086,7 +1086,7 @@ Dates::getDaysInMonth($leapDate); // 29
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The number of days in the month, from 28 to 31
 
@@ -1112,7 +1112,7 @@ Dates::getHour($date); // 14
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The hour as an integer from 0 to 23
 
@@ -1139,7 +1139,7 @@ Dates::getMinute($date); // 30
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The minute as an integer from 0 to 59
 
@@ -1166,7 +1166,7 @@ Dates::getMonth($date); // 4
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The month as an integer from 1 (January) to 12 (December)
 
@@ -1193,7 +1193,7 @@ Dates::getSecond($date); // 45
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The second as an integer from 0 to 59
 
@@ -1223,7 +1223,7 @@ $tz = Dates::getTimezone($date); // 'Asia/Tokyo'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to read the timezone from |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to read the timezone from |
 
 **Returns** `string` — The timezone identifier string (e.g. 'Europe/Paris')
 
@@ -1252,7 +1252,7 @@ Dates::getWeekOfYear($date); // 1
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The ISO 8601 week number from 1 to 53
 
@@ -1278,7 +1278,7 @@ Dates::getYear($date); // 2026
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `int` — The year as a four-digit integer (e.g. 2026)
 
@@ -1309,8 +1309,8 @@ Dates::isAfter($later, $earlier); // true
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to test |
-| `$comparedTo` | `DateTimeImmutable|string` | The date/time value to compare against |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to test |
+| `$comparedTo` | `DateTimeImmutable\|string` | The date/time value to compare against |
 
 **Returns** `bool` — Returns true if $date is after $comparedTo
 
@@ -1342,8 +1342,8 @@ Dates::isBefore($later, $earlier); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to test |
-| `$comparedTo` | `DateTimeImmutable|string` | The date/time value to compare against |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to test |
+| `$comparedTo` | `DateTimeImmutable\|string` | The date/time value to compare against |
 
 **Returns** `bool` — Returns true if $date is before $comparedTo
 
@@ -1380,7 +1380,7 @@ Dates::isBusinessDay('2026-07-04', $custom); // false (holiday)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date is a weekday and not a holiday
 
@@ -1413,7 +1413,7 @@ Dates::isFuture($past); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date is after the current moment
 
@@ -1456,7 +1456,7 @@ Dates::isHoliday('2026-07-04', $custom); // true
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date matches any holiday in the list
 
@@ -1487,7 +1487,7 @@ Dates::isLeapYear(Dates::parse('2026-01-01')); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the year is a leap year
 
@@ -1517,7 +1517,7 @@ Dates::isPast($future); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date is before the current moment
 
@@ -1549,8 +1549,8 @@ Dates::isSameDay($morning, $tomorrow); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `bool` — Returns true if both values fall on the same calendar day
 
@@ -1582,8 +1582,8 @@ Dates::isSameMonth($first, $next); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `bool` — Returns true if both values fall in the same calendar month and year
 
@@ -1615,8 +1615,8 @@ Dates::isSameYear($jan, $ny); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The first date/time value |
-| `$comparedTo` | `DateTimeImmutable|string` | The second date/time value |
+| `$date` | `DateTimeImmutable\|string` | The first date/time value |
+| `$comparedTo` | `DateTimeImmutable\|string` | The second date/time value |
 
 **Returns** `bool` — Returns true if both values fall in the same calendar year
 
@@ -1647,7 +1647,7 @@ Dates::isToday($yesterday); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date falls on today's calendar date
 
@@ -1676,7 +1676,7 @@ Dates::isTomorrow($tomorrow); // true
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date falls on tomorrow's calendar date
 
@@ -1705,7 +1705,7 @@ Dates::isWeekday($saturday); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date falls on Monday through Friday
 
@@ -1734,7 +1734,7 @@ Dates::isWeekend($tuesday); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date falls on a Saturday or Sunday
 
@@ -1763,7 +1763,7 @@ Dates::isYesterday($yesterday); // true
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to inspect |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to inspect |
 
 **Returns** `bool` — Returns true if the date falls on yesterday's calendar date
 
@@ -1793,7 +1793,7 @@ $nowInTokyo = Dates::now('Asia/Tokyo'); // same moment, Tokyo time
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$timezone` | `string|null` | A valid PHP timezone identifier such as 'America/New_York' (default: null, which uses the system default timezone) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier such as 'America/New_York' (default: null, which uses the system default timezone) |
 
 **Returns** `DateTimeImmutable` — The current date and time in the requested timezone
 
@@ -1831,8 +1831,8 @@ $result = Dates::of('2026-04-21 14:30:00')
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | A DateTimeImmutable instance or a parseable date string |
-| `$timezone` | `string|null` | A valid PHP timezone identifier — only used when $date is a string (default: null — system default) |
+| `$date` | `DateTimeImmutable\|string` | A DateTimeImmutable instance or a parseable date string |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier — only used when $date is a string (default: null — system default) |
 
 **Returns** `\Phuture\Coherence\Type\Dates` — A fluent wrapper that enables method chaining
 
@@ -1863,7 +1863,7 @@ $date = Dates::parse('2026-04-21 14:30:00', 'Europe/Berlin');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$dateString` | `string` | Any date/time string understood by PHP's date parser |
-| `$timezone` | `string|null` | A valid PHP timezone identifier (default: null — system default) |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier (default: null — system default) |
 
 **Returns** `DateTimeImmutable` — The parsed date and time value
 
@@ -1897,7 +1897,7 @@ $result = Dates::removeDays($date, 5); // '2026-04-16'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$days` | `int` | The number of days to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the days removed
@@ -1931,7 +1931,7 @@ $result = Dates::removeHours($date, 2); // '2026-04-21 12:30:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$hours` | `int` | The number of hours to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the hours removed
@@ -1965,7 +1965,7 @@ $result = Dates::removeMinutes($date, 15); // '2026-04-21 14:15:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$minutes` | `int` | The number of minutes to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the minutes removed
@@ -2000,7 +2000,7 @@ $result = Dates::removeMonths($date, 2); // '2026-04-15'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$months` | `int` | The number of months to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the months removed
@@ -2034,7 +2034,7 @@ $result = Dates::removeSeconds($date, 30); // '2026-04-21 14:29:30'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$seconds` | `int` | The number of seconds to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the seconds removed
@@ -2068,7 +2068,7 @@ $result = Dates::removeWeeks($date, 1); // '2026-04-14'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$weeks` | `int` | The number of weeks to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the weeks removed
@@ -2102,7 +2102,7 @@ $result = Dates::removeYears($date, 10); // '2016-04-21'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The starting date/time value |
+| `$date` | `DateTimeImmutable\|string` | The starting date/time value |
 | `$years` | `int` | The number of years to remove (must be >= 0) |
 
 **Returns** `DateTimeImmutable` — A new date/time value with the years removed
@@ -2135,7 +2135,7 @@ $result = Dates::startOfDay($date); // '2026-04-21 00:00:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at midnight on the same calendar day
 
@@ -2163,7 +2163,7 @@ $result = Dates::startOfMonth($date); // '2026-04-01 00:00:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at the first day of the month at 00:00:00
 
@@ -2191,7 +2191,7 @@ $result = Dates::startOfWeek($date); // '2026-04-20 00:00:00' (Monday)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at Monday 00:00:00 of the same week
 
@@ -2219,7 +2219,7 @@ $result = Dates::startOfYear($date); // '2026-01-01 00:00:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to adjust |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to adjust |
 
 **Returns** `DateTimeImmutable` — A new date/time value at January 1st of the same year at 00:00:00
 
@@ -2248,7 +2248,7 @@ Dates::toDate($date); // '2026-04-21'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date portion formatted as 'Y-m-d' (e.g. '2026-04-21')
 
@@ -2278,7 +2278,7 @@ Dates::toDateTime($date); // '2026-04-21 14:30:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted as 'Y-m-d H:i:s' (e.g. '2026-04-21 14:30:00')
 
@@ -2309,7 +2309,7 @@ Dates::toIso8601($date); // '2026-04-21T14:30:00-04:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to ISO 8601 (e.g. '2026-04-21T14:30:00+00:00')
 
@@ -2348,8 +2348,8 @@ Dates::toRelative('2026-04-21 12:00:30', $ref); // 'just now'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to describe |
-| `$comparedTo` | `DateTimeImmutable|string|null` | The reference date/time to compare against. Pass null to use the current moment (default: null) |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to describe |
+| `$comparedTo` | `DateTimeImmutable\|string\|null` | The reference date/time to compare against. Pass null to use the current moment (default: null) |
 
 **Returns** `string` — A human-readable relative time string
 
@@ -2379,7 +2379,7 @@ Dates::toRfc1036($date); // 'Tue, 21 Apr 26 14:30:00 +0000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 1036
 
@@ -2409,7 +2409,7 @@ Dates::toRfc1123($date); // 'Tue, 21 Apr 2026 14:30:00 +0000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 1123
 
@@ -2439,7 +2439,7 @@ Dates::toRfc2822($date); // 'Tue, 21 Apr 2026 14:30:00 +0000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 2822
 
@@ -2470,7 +2470,7 @@ Dates::toRfc7231($date); // 'Tue, 21 Apr 2026 18:30:00 GMT'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 7231 (IMF-fixdate)
 
@@ -2500,7 +2500,7 @@ Dates::toRfc822($date); // 'Tue, 21 Apr 26 14:30:00 +0000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 822
 
@@ -2530,7 +2530,7 @@ Dates::toRfc850($date); // 'Tuesday, 21-Apr-26 14:30:00 UTC'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to RFC 850
 
@@ -2559,7 +2559,7 @@ Dates::toTime($date); // '14:30:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The time portion formatted as 'H:i:s' (e.g. '14:30:00')
 
@@ -2587,7 +2587,7 @@ Dates::toTimestamp($date); // 1745193600
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `int` — The number of seconds since the Unix epoch (1970-01-01 00:00:00 UTC)
 
@@ -2618,7 +2618,7 @@ $ny = Dates::toTimezone($utc, 'America/New_York');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 | `$timezone` | `string` | A valid PHP timezone identifier to convert into |
 
 **Returns** `DateTimeImmutable` — A new date/time value in the requested timezone
@@ -2653,7 +2653,7 @@ Dates::toW3c($date); // '2026-04-21T14:30:00+00:00'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | The date/time value to convert |
+| `$date` | `DateTimeImmutable\|string` | The date/time value to convert |
 
 **Returns** `string` — The date and time formatted according to the W3C standard
 
@@ -2671,7 +2671,7 @@ Builds a DateTimeZone from a timezone string, or returns the system default time
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$timezone` | `string|null` | A valid PHP timezone identifier, or null for the system default |
+| `$timezone` | `string\|null` | A valid PHP timezone identifier, or null for the system default |
 
 **Returns** `DateTimeZone` — The resolved timezone object
 
@@ -2753,7 +2753,7 @@ Resolves a DateTimeImmutable|string argument to a DateTimeImmutable instance.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$date` | `DateTimeImmutable|string` | A DateTimeImmutable instance or a parseable date string |
+| `$date` | `DateTimeImmutable\|string` | A DateTimeImmutable instance or a parseable date string |
 
 **Returns** `DateTimeImmutable` — The resolved date/time value
 
@@ -2771,7 +2771,7 @@ Resolves the base date for fromRelative from the $relativeTo parameter.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$relativeTo` | `DateTimeImmutable|string|null` | The user-supplied reference date |
-| `$timezone` | `string|null` | Timezone used when $relativeTo is null |
+| `$relativeTo` | `DateTimeImmutable\|string\|null` | The user-supplied reference date |
+| `$timezone` | `string\|null` | Timezone used when $relativeTo is null |
 
 **Returns** `DateTimeImmutable` — The resolved reference date

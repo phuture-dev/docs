@@ -164,6 +164,11 @@ class Markdown
         // Anchors are written bare, and sit on the heading itself, where the
         // stylesheet keeps them clear of the navbar once they are jumped to
         self::$converter = new GithubFlavoredMarkdownConverter([
+            // A document is written by whoever owns the repository it comes from, so the html it
+            // carries of its own is taken out rather than passed on, and a link is only followed
+            // where it leads somewhere a browser may safely go
+            'html_input' => 'strip',
+            'allow_unsafe_links' => false,
             'slug_normalizer' => [
                 'instance' => new HeadingSlug(),
             ],

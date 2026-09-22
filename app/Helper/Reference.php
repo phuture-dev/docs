@@ -124,7 +124,8 @@ class Reference
                 continue;
             }
 
-            $rows[] = '| `' . $parameter['name'] . '` | ' . self::code($parameter['type']) . ' | '
+            $rows[] = '| ' . self::code(self::escaped($parameter['name'])) . ' | '
+                . self::code(self::escaped($parameter['type'])) . ' | '
                 . self::flatten($parameter['description']) . ' |';
         }
 
@@ -275,9 +276,23 @@ class Reference
      */
     protected static function flatten(string $text): string
     {
-        $text = (string) preg_replace('/\s+/', ' ', $text);
+        return trim(self::escaped((string) preg_replace('/\s+/', ' ', $text)));
+    }
 
-        return trim(str_replace('|', '\\|', $text));
+    /**
+     * Text with what would otherwise end a cell written as itself
+     *
+     * A row of a table is split on the upright bar, wherever that bar stands and
+     * whatever it stands inside, so a union type such as `int|string` would be read
+     * as the end of one cell and the start of another. Written with a backslash in
+     * front of it, the bar is part of the cell it was written in.
+     *
+     * @param string $text Text to write into a cell
+     * @return string
+     */
+    protected static function escaped(string $text): string
+    {
+        return str_replace('|', '\\|', $text);
     }
 
     /**

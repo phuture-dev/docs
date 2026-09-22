@@ -71,7 +71,7 @@ Numbers::abbreviate(1500, 2); // '1.50K'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to abbreviate |
+| `$number` | `int\|float\|string` | The number to abbreviate |
 | `$precision` | `int` | The number of decimal places to keep (default: 1) |
 
 **Returns** `string` — The abbreviated number string
@@ -106,7 +106,7 @@ Numbers::absolute(0); // 0
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to convert |
+| `$number` | `int\|float\|string` | The number to convert |
 
 **Returns** `int|float|string` — The non-negative value of the number
 
@@ -136,8 +136,8 @@ Numbers::add(1.5, 2.5); // '4.0000000000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The first addend |
-| `$right` | `int|float|string` | The second addend |
+| `$left` | `int\|float\|string` | The first addend |
+| `$right` | `int\|float\|string` | The second addend |
 
 **Returns** `string` — The sum as a string
 
@@ -167,8 +167,8 @@ Numbers::addPercentage(200, 5); // '210.0000000000'  (200 + 5%)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The base number |
-| `$percentage` | `int|float|string` | The percentage to add (e.g. 20 means 20%) |
+| `$number` | `int\|float\|string` | The base number |
+| `$percentage` | `int\|float\|string` | The percentage to add (e.g. 20 means 20%) |
 
 **Returns** `string` — The increased value as a BCMath string
 
@@ -199,8 +199,8 @@ Numbers::areEqual(1.0, 2.0); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The first value to compare |
-| `$right` | `int|float|string` | The second value to compare |
+| `$left` | `int\|float\|string` | The first value to compare |
+| `$right` | `int\|float\|string` | The second value to compare |
 
 **Returns** `bool` — True when both values are equal at BCMath precision
 
@@ -235,7 +235,7 @@ Numbers::ceil(5.0); // '5'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to round up |
+| `$number` | `int\|float\|string` | The number to round up |
 
 **Returns** `string` — The smallest integer greater than or equal to the number as a BCMath string
 
@@ -324,9 +324,9 @@ Numbers::clamp(150, 0, 100); // 100
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to restrict |
-| `$min` | `int|float|string` | The lower bound |
-| `$max` | `int|float|string` | The upper bound |
+| `$number` | `int\|float\|string` | The number to restrict |
+| `$min` | `int\|float\|string` | The lower bound |
+| `$max` | `int\|float\|string` | The upper bound |
 
 **Returns** `int|float|string` — The clamped value
 
@@ -364,8 +364,8 @@ usort($arr, [Numbers::class, 'compare']); // [1, 2, 3]
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The first value to compare |
-| `$right` | `int|float|string` | The second value to compare |
+| `$left` | `int\|float\|string` | The first value to compare |
+| `$right` | `int\|float\|string` | The second value to compare |
 
 **Returns** `int` — -1 when $left < $right, 0 when equal, 1 when $left > $right
 
@@ -444,7 +444,7 @@ Numbers::convert(1, Unit::GallonUs, Unit::Liter);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float|string` | The numeric value to convert |
+| `$value` | `int\|float\|string` | The numeric value to convert |
 | `$from` | `Unit` | The source unit to convert from |
 | `$to` | `Unit` | The target unit to convert to |
 
@@ -481,8 +481,8 @@ Numbers::divide(1, 3); // '0.3333333333'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$dividend` | `int|float|string` | The dividend |
-| `$divisor` | `int|float|string` | The divisor (must not be zero) |
+| `$dividend` | `int\|float\|string` | The dividend |
+| `$divisor` | `int\|float\|string` | The divisor (must not be zero) |
 
 **Returns** `string` — The quotient as a string
 
@@ -549,7 +549,7 @@ Numbers::fileSize(1000, 0, ByteBase::Decimal); // '1 KB'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$bytes` | `int|float|string` | The file size in bytes |
+| `$bytes` | `int\|float\|string` | The file size in bytes |
 | `$precision` | `int` | The number of decimal places to show (default: 0) |
 | `$base` | `\Phuture\Coherence\Enum\ByteBase` | The base for unit conversion — Binary (1024) or Decimal (1000) (default: ByteBase::Binary) |
 
@@ -586,7 +586,7 @@ Numbers::floor(5.0); // '5'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to round down |
+| `$number` | `int\|float\|string` | The number to round down |
 
 **Returns** `string` — The largest integer less than or equal to the number as a BCMath string
 
@@ -617,7 +617,7 @@ Numbers::forHumans(1234, 2); // '1.23 thousand'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to format |
+| `$number` | `int\|float\|string` | The number to format |
 | `$precision` | `int` | The number of decimal places to keep (default: 1) |
 
 **Returns** `string` — The human-readable number string
@@ -652,8 +652,8 @@ Numbers::format(1234.5678, 4); // '1,234.5678'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to format |
-| `$precision` | `int|null` | The number of decimal places (default: null — preserve original) |
+| `$number` | `int\|float\|string` | The number to format |
+| `$precision` | `int\|null` | The number of decimal places (default: null — preserve original) |
 
 **Returns** `string` — The formatted number string
 
@@ -688,7 +688,7 @@ Numbers::formatPercentage(1.5, 1); // '150.0%'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to convert to a percentage |
+| `$number` | `int\|float\|string` | The number to convert to a percentage |
 | `$precision` | `int` | The number of decimal places (default: 1) |
 | `$multiplicand` | `int` | The value to multiply by before formatting (default: 100) |
 
@@ -730,7 +730,7 @@ Numbers::isFloat(INF); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float|string` | The value to check |
+| `$value` | `int\|float\|string` | The value to check |
 
 **Returns** `bool` — True when the value is a float with a fractional part
 
@@ -761,8 +761,8 @@ Numbers::isGreaterThan(10.0, 10.0); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The value to test |
-| `$right` | `int|float|string` | The value to compare against |
+| `$left` | `int\|float\|string` | The value to test |
+| `$right` | `int\|float\|string` | The value to compare against |
 
 **Returns** `bool` — True when $left is strictly greater than $right
 
@@ -798,8 +798,8 @@ Numbers::isGreaterThanOrEqualTo(5.0, 10.0); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The value to test |
-| `$right` | `int|float|string` | The value to compare against |
+| `$left` | `int\|float\|string` | The value to test |
+| `$right` | `int\|float\|string` | The value to compare against |
 
 **Returns** `bool` — True when $left is greater than or equal to $right
 
@@ -836,7 +836,7 @@ Numbers::isInteger(INF); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float|string` | The value to check |
+| `$value` | `int\|float\|string` | The value to check |
 
 **Returns** `bool` — True when the value has no fractional part
 
@@ -867,8 +867,8 @@ Numbers::isLessThan(10.0, 10.0); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The value to test |
-| `$right` | `int|float|string` | The value to compare against |
+| `$left` | `int\|float\|string` | The value to test |
+| `$right` | `int\|float\|string` | The value to compare against |
 
 **Returns** `bool` — True when $left is strictly less than $right
 
@@ -904,8 +904,8 @@ Numbers::isLessThanOrEqualTo(15.0, 10.0); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The value to test |
-| `$right` | `int|float|string` | The value to compare against |
+| `$left` | `int\|float\|string` | The value to test |
+| `$right` | `int\|float\|string` | The value to compare against |
 
 **Returns** `bool` — True when $left is less than or equal to $right
 
@@ -938,7 +938,7 @@ Numbers::isNegative(3); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to check |
+| `$number` | `int\|float\|string` | The number to check |
 
 **Returns** `bool` — True when the number is strictly less than zero
 
@@ -1000,7 +1000,7 @@ Numbers::isPositive(-3); // false
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to check |
+| `$number` | `int\|float\|string` | The number to check |
 
 **Returns** `bool` — True when the number is strictly greater than zero
 
@@ -1032,7 +1032,7 @@ Numbers::isZero('0.0000000000'); // true
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to check |
+| `$number` | `int\|float\|string` | The number to check |
 
 **Returns** `bool` — True when the number is zero at BCMath precision
 
@@ -1062,8 +1062,8 @@ Numbers::max(3.14, 2.7); // 3.14
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$first` | `int|float|string` | The first number |
-| `$second` | `int|float|string` | The second number |
+| `$first` | `int\|float\|string` | The first number |
+| `$second` | `int\|float\|string` | The second number |
 
 **Returns** `int|float|string` — The higher of the two numbers
 
@@ -1168,8 +1168,8 @@ Numbers::min(3.14, 2.7); // 2.7
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$first` | `int|float|string` | The first number |
-| `$second` | `int|float|string` | The second number |
+| `$first` | `int\|float\|string` | The first number |
+| `$second` | `int\|float\|string` | The second number |
 
 **Returns** `int|float|string` — The lower of the two numbers
 
@@ -1240,8 +1240,8 @@ Numbers::modulus(7.5, 2); // '1.5000000000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$dividend` | `int|float|string` | The dividend |
-| `$divisor` | `int|float|string` | The divisor (must not be zero) |
+| `$dividend` | `int\|float\|string` | The dividend |
+| `$divisor` | `int\|float\|string` | The divisor (must not be zero) |
 
 **Returns** `string` — The remainder as a string
 
@@ -1275,8 +1275,8 @@ Numbers::multiply(2.5, 4.0); // '10.0000000000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The first factor |
-| `$right` | `int|float|string` | The second factor |
+| `$left` | `int\|float\|string` | The first factor |
+| `$right` | `int\|float\|string` | The second factor |
 
 **Returns** `string` — The product as a BCMath string at BCMath precision
 
@@ -1310,7 +1310,7 @@ $result = Numbers::of(10)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The starting number to wrap in the fluent interface |
+| `$number` | `int\|float\|string` | The starting number to wrap in the fluent interface |
 
 **Returns** `\Phuture\Coherence\Type\Numbers` — Returns a fluent Numbers instance for chaining
 
@@ -1340,7 +1340,7 @@ Numbers::opposite(0); // 0
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to negate |
+| `$number` | `int\|float\|string` | The number to negate |
 
 **Returns** `int|float|string` — The negated value
 
@@ -1475,8 +1475,8 @@ Numbers::percentage(100, 5); // '5.0000000000' (5% of 100)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The base number |
-| `$percentage` | `int|float|string` | The percentage to calculate (e.g. 20 means 20%) |
+| `$number` | `int\|float\|string` | The base number |
+| `$percentage` | `int\|float\|string` | The percentage to calculate (e.g. 20 means 20%) |
 
 **Returns** `string` — The percentage amount as a BCMath string
 
@@ -1517,7 +1517,7 @@ Numbers::percentile([1, 2, 3, 4, 5], 0);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$values` | `array` | The list of numbers to compute the percentile for |
-| `$percentile` | `int|float` | The percentile to compute, from 0 to 100 |
+| `$percentile` | `int\|float` | The percentile to compute, from 0 to 100 |
 
 **Returns** `string` — The value at the given percentile as a BCMath string
 
@@ -1616,7 +1616,7 @@ Numbers::round(3.5, 0, RoundingMode::HalfTowardsZero); // '3'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to round |
+| `$number` | `int\|float\|string` | The number to round |
 | `$precision` | `int` | The number of decimal places (default: 0) |
 | `$mode` | `RoundingMode` | The rounding mode (default: \RoundingMode::HalfAwayFromZero) |
 
@@ -1758,7 +1758,7 @@ Numbers::squareRoot(0); // '0.0000000000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to compute the square root of (must be non-negative) |
+| `$number` | `int\|float\|string` | The number to compute the square root of (must be non-negative) |
 | `$scale` | `int` | The number of decimal places in the result (default: 10) |
 
 **Returns** `string` — The square root as a string
@@ -1832,8 +1832,8 @@ Numbers::subtract(1, 1); // '0.0000000000'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$left` | `int|float|string` | The minuend |
-| `$right` | `int|float|string` | The subtrahend |
+| `$left` | `int\|float\|string` | The minuend |
+| `$right` | `int\|float\|string` | The subtrahend |
 
 **Returns** `string` — The difference as a string
 
@@ -1863,8 +1863,8 @@ Numbers::subtractPercentage(200, 5); // '190.0000000000' (200 - 5%)
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The base number |
-| `$percentage` | `int|float|string` | The percentage to subtract (e.g. 20 means 20%) |
+| `$number` | `int\|float\|string` | The base number |
+| `$percentage` | `int\|float\|string` | The percentage to subtract (e.g. 20 means 20%) |
 
 **Returns** `string` — The decreased value as a BCMath string
 
@@ -1903,7 +1903,7 @@ Numbers::toNumber('0.3333333333'); // '0.3333333333'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string|bool|array` | The value to normalize |
+| `$number` | `int\|float\|string\|bool\|array` | The value to normalize |
 
 **Returns** `string` — The BCMath string representation
 
@@ -1937,7 +1937,7 @@ Numbers::trimTrailingZeros(7.500); // '7.5'
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number or numeric string to trim |
+| `$number` | `int\|float\|string` | The number or numeric string to trim |
 
 **Returns** `string` — The trimmed number string
 
@@ -2053,7 +2053,7 @@ temperature units. All arithmetic uses BCMath for precision.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$value` | `int|float|string` | The temperature value to convert |
+| `$value` | `int\|float\|string` | The temperature value to convert |
 | `$from` | `Unit` | The source temperature unit |
 | `$to` | `Unit` | The target temperature unit |
 
@@ -2076,6 +2076,6 @@ digits follow the decimal point.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$number` | `int|float|string` | The number to inspect |
+| `$number` | `int\|float\|string` | The number to inspect |
 
 **Returns** `int` — The number of decimal places found

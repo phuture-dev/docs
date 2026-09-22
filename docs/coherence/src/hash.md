@@ -905,7 +905,7 @@ $hash = Hash::hash('Hello, World!');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$data` | `string` | The data to hash |
-| `$salt` | `string|null` | Optional salt applied to both hashes (default: null for no salt) |
+| `$salt` | `string\|null` | Optional salt applied to both hashes (default: null for no salt) |
 | `$binary` | `bool` | Whether to return raw binary data (default: false for hex string) |
 
 **Returns** `string` — Returns the SHA-256 and SHA-512 hashes joined into a single string
@@ -1659,7 +1659,7 @@ $result = Hash::hmacWithSalt('message', 'secret-key');
 | --- | --- | --- |
 | `$data` | `string` | The data to authenticate |
 | `$key` | `string` | The secret key for authentication |
-| `$salt` | `string|null` | Optional custom salt (default: null to generate random salt) |
+| `$salt` | `string\|null` | Optional custom salt (default: null to generate random salt) |
 | `$binary` | `bool` | Whether to output raw binary data (default: false for hex string) |
 | `$algo` | `string` | The HMAC algorithm to use (default: 'sha256') |
 
@@ -1781,7 +1781,7 @@ $result = Hash::makeWithSalt('password123');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$data` | `string` | The data to hash with salt |
-| `$salt` | `string|null` | Optional custom salt (default: null to generate random salt) |
+| `$salt` | `string\|null` | Optional custom salt (default: null to generate random salt) |
 | `$binary` | `bool` | Whether to output raw binary data (default: false for hex string) |
 | `$algo` | `string` | The hash algorithm to use (default: 'sha256') |
 
@@ -2125,7 +2125,7 @@ $key = Hash::pbkdf2('user-password', 'salt-value', 10000, 32);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$password` | `string` | The password to derive the key from |
-| `$salt` | `string|null` | Optional salt value (default: null to generate random salt) |
+| `$salt` | `string\|null` | Optional salt value (default: null to generate random salt) |
 | `$iterations` | `int` | Number of hash iterations (default: 100000) |
 | `$length` | `int` | Desired length of derived key in bytes (default: 32) |
 | `$algo` | `string` | The hash algorithm to use (default: 'sha256') |

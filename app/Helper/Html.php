@@ -4,6 +4,7 @@ namespace Phuture\App\Helper;
 
 use Throwable;
 use Dom\HTMLDocument;
+use Symfony\Component\HtmlSanitizer\{HtmlSanitizer, HtmlSanitizerConfig};
 
 /**
  * Reads a page written as html.
@@ -40,6 +41,16 @@ class Html
     protected const CODE_PATTERN = '#<(script|style)\b[^>]*>.*?</\1>#is';
 
     /**
+     * Sanitiser every page is read through, built the first time one is.
+     *
+     * Building one means writing out everything a page is allowed to keep, which is
+     * worth doing once rather than once per page.
+     *
+     * @var \Symfony\Component\HtmlSanitizer\HtmlSanitizer|null
+     */
+    private static ?HtmlSanitizer $sanitizer = null;
+
+    /**
      * Reads the contents of an html file.
      *
      * A whole document is unwrapped, so that only what lives inside its body ends
@@ -68,10 +79,56 @@ class Html
         }
 
         if (preg_match('/<body\b[^>]*>(.*)<\/body>/is', $html, $body)) {
-            return trim($body[1]);
+            $html = $body[1];
         }
 
-        return $html;
+        return trim(self::sanitizer()->sanitize($html));
+    }
+
+    /**
+     * Builds the sanitiser a page is read through.
+     *
+     * A page comes from somebody else's repository and is printed into this one as
+     * the html it already is, which is only safe where that html is known to be
+     * nothing but a document. Everything a document is made of is kept, from its
+     * headings and tables down to the language a block of code is marked as, and
+     * everything else goes: scripts and frames, the handlers an attribute may carry,
+     * and any link that leads somewhere other than another page.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Helper\Html;
+     *
+     * $html = Html::sanitizer()->sanitize('<p onclick="alert(1)">Hello</p>');
+     *
+     * // Returns '<p>Hello</p>'
+     * ```
+     *
+     * @return \Symfony\Component\HtmlSanitizer\HtmlSanitizer The sanitiser of this request
+     * @see \Phuture\App\Helper\Html::file()
+     */
+    protected static function sanitizer(): HtmlSanitizer
+    {
+        if (self::$sanitizer !== null) {
+            return self::$sanitizer;
+        }
+
+        $config = (new HtmlSanitizerConfig())
+            ->allowSafeElements()
+            ->allowRelativeLinks()
+            ->allowRelativeMedias()
+            ->allowLinkSchemes(['http', 'https', 'mailto'])
+            ->allowMediaSchemes(['http', 'https'])
+            ->allowAttribute('href', ['a'])
+            ->allowAttribute('src', ['img'])
+            ->allowAttribute('alt', ['img'])
+            ->allowAttribute('title', ['a', 'img', 'abbr'])
+            ->allowAttribute('id', ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+            ->allowAttribute('class', ['pre', 'code', 'span', 'div', 'table'])
+            ->allowAttribute('colspan', ['td', 'th'])
+            ->allowAttribute('rowspan', ['td', 'th']);
+
+        return self::$sanitizer = new HtmlSanitizer($config);
     }
 
     /**

@@ -6,12 +6,12 @@ use Phuture\App\Command;
 use Phuture\App\Enum\Schedule;
 
 /**
- * Command that empties the workspace before anything is brought into it.
+ * Command that empties the folders a source fills, before anything is brought into them.
  *
- * Everything a source brings in is put in a folder of its own, so emptying those
- * folders leaves the pages written by hand at the root of the documentation
- * exactly where they were. It takes the lowest order of any command, because a run
- * should never read what an earlier one left behind.
+ * Only the folders the source file names are emptied. Everything else under the
+ * documentation was put there by somebody rather than by a run, and a run that took
+ * it away would be taking away the only copy of it. It takes the lowest order of any
+ * command, because a folder has to be empty before it is filled again.
  *
  * @copyright Copyright (c) 2026, Advandz Technologies, LLC
  * @license https://opensource.org/licenses/MIT MIT License
@@ -32,24 +32,26 @@ class ClearWorkspace extends Command
     /**
      * Place this command takes in a run.
      *
-     * The lowest number of any command, because the workspace has to be empty
-     * before anything is brought into it.
+     * The lowest number of any command, because a folder has to be empty before
+     * anything is brought into it.
      *
      * @var int
      */
     protected const ORDER = 10;
 
     /**
-     * Clears the workspace, keeping the pages written at the root of the documentation.
+     * Empties every folder of the documentation a source fills.
      *
-     * Everything a source brings in is put in a folder of its own, so emptying the
-     * documentation of its folders leaves the pages of the site itself where they
-     * are and takes away whatever a source has stopped carrying, or stopped being
-     * read from at all. A folder that is really a link to somewhere else is left
-     * alone, and so is whatever it points at.
+     * Each entry of the source file names the folder its documents are written to,
+     * and those are the folders emptied here, which takes away whatever a source has
+     * stopped carrying. Nothing else is touched: a page written by hand, whether it
+     * sits at the root of the documentation or in a folder of its own, is not
+     * something any source can put back.
      *
-     * Unlike the other commands this one reads no entries from the source file:
-     * there is only ever one workspace to clear.
+     * The root of the documentation is never emptied, even where an entry writes a
+     * single document to it, because emptying it would take the whole site with it.
+     * The command a document belongs to clears that document itself, once it has the
+     * new one in hand.
      *
      * Example:
      * ```php
@@ -57,10 +59,11 @@ class ClearWorkspace extends Command
      *
      * $exitCode = ClearWorkspace::run();
      *
-     * // Returns 0, and prints a line for every folder taken away
+     * // Returns 0, and prints a line for every folder emptied
      * ```
      *
-     * @return int Exit code, zero when the workspace was cleared and one when a folder would not go
+     * @return int Exit code, zero when the folders were emptied and one when one would not go
+     * @see \Phuture\App\Command::directory()
      */
     public static function run(): int
     {
@@ -70,25 +73,40 @@ class ClearWorkspace extends Command
             return self::abort('There is no documentation folder to clear.');
         }
 
-        $cleared = 0;
+        $sourceFile = self::root() . self::SOURCE_FILE;
+        $entries = self::entries($sourceFile);
 
-        foreach (self::children($docs) as $path) {
-            if (!is_dir($path) || is_link($path)) {
+        if ($entries === null) {
+            return self::abort('Nothing could be read from ' . $sourceFile);
+        }
+
+        $destinations = [];
+
+        foreach ($entries as $entry) {
+            $directory = self::directory($entry['destination']);
+
+            // The root holds the pages of the site itself, and a folder that is really a link is
+            // left alone along with whatever it points at
+            if ($directory === null || $directory === $docs || !is_dir($directory) || is_link($directory)) {
                 continue;
             }
 
-            self::remove($path);
-
-            if (file_exists($path)) {
-                return self::abort(self::relative($path) . ' could not be cleared.');
-            }
-
-            self::climate()->out('  <green>cleared</green> ' . self::relative($path));
-            $cleared++;
+            $destinations[$directory] = $directory;
         }
 
-        if ($cleared === 0) {
-            self::climate()->out('The workspace was already clear.');
+        if ($destinations === []) {
+            self::climate()->out('No folder of the documentation is filled by a source.');
+            self::ran();
+
+            return 0;
+        }
+
+        if (!self::clear($destinations)) {
+            return self::abort('A folder of the documentation could not be emptied.');
+        }
+
+        foreach ($destinations as $destination) {
+            self::climate()->out('  <green>cleared</green> ' . self::relative($destination));
         }
 
         self::ran();

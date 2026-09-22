@@ -67,14 +67,15 @@ abstract class Command
     private static ?CLImate $climate = null;
 
     /**
-     * Entries of the source file this command takes care of, or null when the file cannot be used
+     * Every entry of the source file, or null when the file cannot be used
      *
      * Entries are handed back as they were written, so that a command can read
-     * the keys only its own type knows about.
+     * the keys only its own type knows about. An entry naming neither end of the
+     * move is left out, since there is nothing to be done with it.
      *
      * @param string $path Path of the source file
-     * @return array The entries of this command's type, or null when the source file cannot be
-     *  read
+     * @return array Every entry the source file holds, or null when it cannot be read
+     * @see \Phuture\App\Command::typedEntries()
      */
     protected static function entries(string $path): ?array
     {
@@ -95,7 +96,7 @@ abstract class Command
         $entries = [];
 
         foreach ($sources as $source) {
-            if (!is_array($source) || ($source['type'] ?? null) !== static::TYPE) {
+            if (!is_array($source)) {
                 continue;
             }
 
@@ -108,6 +109,67 @@ abstract class Command
         }
 
         return $entries;
+    }
+
+    /**
+     * Entries of this command's type, or null when the source file cannot be used.
+     *
+     * The same entries the source file holds, with the ones another command takes
+     * care of left out.
+     *
+     * @param string $path Path of the source file
+     * @return array The entries of this command's type, or null when the source file cannot be read
+     * @see \Phuture\App\Command::entries()
+     */
+    protected static function typedEntries(string $path): ?array
+    {
+        $entries = self::entries($path);
+
+        if ($entries === null) {
+            return null;
+        }
+
+        return array_values(array_filter($entries, fn ($entry) => ($entry['type'] ?? null) === static::TYPE));
+    }
+
+    /**
+     * Folder of the documentation a destination names, or null when it names none.
+     *
+     * A destination is counted from the root of the documentation, and a destination
+     * walking up out of it is no destination at all. The root itself is a folder a
+     * document may be written to, which is how a page of the site is kept beside the
+     * pages written by hand.
+     *
+     * Example:
+     * ```php
+     * use Phuture\App\Command;
+     *
+     * $directory = Command::directory('coherence/');
+     *
+     * // Returns the path of docs/coherence
+     * ```
+     *
+     * @param string $destination Destination as the source file writes it
+     * @return string Path of the folder, or null when the destination leads outside the documentation
+     */
+    protected static function directory(string $destination): ?string
+    {
+        $docs = rtrim(self::docs(), DIRECTORY_SEPARATOR);
+        $destination = trim(str_replace('\\', '/', trim($destination)), '/');
+
+        // A path walking up cannot be resolved against a folder that is not there yet
+        if (preg_match('#(^|/)\.\.(/|$)#', $destination)) {
+            return null;
+        }
+
+        // The documentation root is a destination of its own, written as / or left empty
+        if ($destination === '') {
+            return $docs;
+        }
+
+        $path = $docs . DIRECTORY_SEPARATOR . $destination;
+
+        return str_starts_with($path, $docs . DIRECTORY_SEPARATOR) ? $path : null;
     }
 
     /**

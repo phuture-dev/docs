@@ -10,7 +10,7 @@ Enumeration for HTML entity encoding strategies.
 
 This enum defines how HTML encoding and decoding operations handle characters.
 Each case represents a different level of encoding strictness. Use this enum
-with \Phuture\Coherence\Html::entityEncode() and \Phuture\Coherence\Html::entityDecode()
+with \Phuture\Coherence\Html::encode() and \Phuture\Coherence\Html::decode()
 to control which characters are converted to or from HTML entities.
 
 ## Cases

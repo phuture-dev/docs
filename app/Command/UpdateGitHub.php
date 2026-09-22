@@ -89,7 +89,7 @@ class UpdateGitHub extends Command
     public static function run(?string $sourceFile = null): int
     {
         $sourceFile = $sourceFile ?? self::root() . self::SOURCE_FILE;
-        $entries = self::entries($sourceFile);
+        $entries = self::typedEntries($sourceFile);
 
         if ($entries === null) {
             return self::abort('Nothing could be read from ' . $sourceFile);
@@ -239,32 +239,6 @@ class UpdateGitHub extends Command
         }
 
         return $exclusions;
-    }
-
-    /**
-     * Folder the documents of a repository are written to, or null when it would land outside the documentation
-     *
-     * @param string $destination Destination as the source file writes it
-     * @return string|null
-     */
-    protected static function directory(string $destination): ?string
-    {
-        $docs = rtrim(self::docs(), DIRECTORY_SEPARATOR);
-        $destination = trim(str_replace('\\', '/', trim($destination)), '/');
-
-        // A path walking up cannot be resolved against a folder that is not there yet
-        if (preg_match('#(^|/)\.\.(/|$)#', $destination)) {
-            return null;
-        }
-
-        // The documentation root is a destination of its own, written as / or left empty
-        if ($destination === '') {
-            return $docs;
-        }
-
-        $path = $docs . DIRECTORY_SEPARATOR . $destination;
-
-        return str_starts_with($path, $docs . DIRECTORY_SEPARATOR) ? $path : null;
     }
 
     /**

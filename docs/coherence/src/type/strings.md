@@ -3,7 +3,7 @@
 `Phuture\Coherence\Type\Strings`
 
 ```php
-class Strings extends FluentClass implements Stringable, \Stringable
+class Strings extends FluentClass implements Stringable
 ```
 
 A fluent wrapper around the Strings utility class for chainable string manipulation.
@@ -617,7 +617,7 @@ Masks a portion of the string with a repeated mask character.
 | --- | --- | --- |
 | `$mask` | `string` | The mask character to use (default: '*') |
 | `$offset` | `int` | The start position to begin masking |
-| `$length` | `int|null` | The number of characters to mask (null masks to the end) |
+| `$length` | `int\|null` | The number of characters to mask (null masks to the end) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -812,7 +812,7 @@ Replaces a portion of the string starting at a given character position.
 | --- | --- | --- |
 | `$replacement` | `string` | The text to insert at the given position |
 | `$position` | `int` | The character index at which to begin replacement (negative counts from end) |
-| `$length` | `int|null` | The number of characters to replace (null replaces to end of string) |
+| `$length` | `int\|null` | The number of characters to replace (null replaces to end of string) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -991,7 +991,7 @@ Extracts a portion of the string by start position and optional length.
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$start` | `int` | The starting position (negative counts from the end) |
-| `$length` | `int|null` | The number of characters to return (null returns to the end) |
+| `$length` | `int\|null` | The number of characters to return (null returns to the end) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -1226,7 +1226,7 @@ Strips whitespace (or given characters) from both ends of the string.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -1244,7 +1244,7 @@ Strips whitespace (or given characters) from the beginning of the string.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -1262,7 +1262,7 @@ Strips whitespace (or given characters) from the end of the string.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$characters` | `string|null` | The characters to strip (default: whitespace) |
+| `$characters` | `string\|null` | The characters to strip (default: whitespace) |
 
 **Returns** `self` — Returns the current instance for method chaining
 

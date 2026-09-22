@@ -84,7 +84,7 @@ $debugRef = true;
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to retrieve the reference from (passed by reference) |
-| `$key` | `string|int|array` | The key to access (string/int for direct access, array for a nested path). |
+| `$key` | `string\|int\|array` | The key to access (string/int for direct access, array for a nested path). |
 
 **Returns** `mixed` — Returns a reference to the array element
 
@@ -105,7 +105,7 @@ public static function accessible(mixed $value): bool
 Checks if a value can be accessed like an array.
 
 This method determines if a given value supports array-style access using square brackets.
-Returns true for arrays and objects implementing ArrayAccess or Arrayable.
+Returns true for arrays and objects implementing ArrayAccess, which Arrayable extends.
 
 This is useful when you need to verify that a value can be safely accessed with bracket
 notation before attempting to read or write values using keys.
@@ -207,8 +207,8 @@ $result = Arrays::associate($users, 'id');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to transform. |
-| `$key` | `string|int` | The field to use as the associative array key. |
-| `$value` | `string|int|null` | Optional field to use as the value. If null, uses the entire item. |
+| `$key` | `string\|int` | The field to use as the associative array key. |
+| `$value` | `string\|int\|null` | Optional field to use as the value. If null, uses the entire item. |
 
 **Returns** `array` — Returns an associative array indexed by the specified key
 
@@ -396,8 +396,8 @@ $indexed = Arrays::column($users, ['profile', 'email'], 'id');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The multidimensional array to extract from. |
-| `$column` | `int|string|array|null` | The column name, index, or nested path array to extract. |
-| `$index` | `int|string|array|null` | Optional column, index, or nested path array to use as keys (default: null). |
+| `$column` | `int\|string\|array\|null` | The column name, index, or nested path array to extract. |
+| `$index` | `int\|string\|array\|null` | Optional column, index, or nested path array to use as keys (default: null). |
 
 **Returns** `array` — Returns an array of values from the specified column
 
@@ -662,7 +662,7 @@ $result = Arrays::difference(
 | --- | --- | --- |
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
-| `$callback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$callback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns values from the first array not found in other arrays
 
@@ -745,8 +745,8 @@ $result = Arrays::differenceAssoc(
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
 | `$comparator` | `ArrayComparator` | The comparator to use with the provided callback(s) (required with callbacks) |
-| `$firstCallback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
-| `$secondCallback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$firstCallback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$secondCallback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns key-value pairs from the first array not found in other arrays
 
@@ -805,7 +805,7 @@ $result = Arrays::differenceKeys(
 | --- | --- | --- |
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
-| `$callback` | `callable|null` | Optional comparison function for keys that returns <0, 0, or >0 |
+| `$callback` | `callable\|null` | Optional comparison function for keys that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns key-value pairs whose keys are not found in other arrays
 
@@ -881,7 +881,7 @@ $hasPhone = Arrays::exists($user, 'phone');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to search in |
-| `$key` | `string|int` | The key to search for |
+| `$key` | `string\|int` | The key to search for |
 
 **Returns** `bool` — Returns true if the key exists in the array, false otherwise
 
@@ -1012,7 +1012,7 @@ $filtered = Arrays::filter($mixed);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to filter. |
-| `$callback` | `callable|null` | Optional function to test each element (default: removes falsy values) The callback has the signature `function (mixed $value, mixed $key): bool` |
+| `$callback` | `callable\|null` | Optional function to test each element (default: removes falsy values) The callback has the signature `function (mixed $value, mixed $key): bool` |
 
 **Returns** `array` — Returns a new array containing only the filtered elements
 
@@ -1412,7 +1412,7 @@ $role = Arrays::get($data, 'role');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to retrieve the value from. |
-| `$key` | `string|int|array` | The key to access (string/int for direct access, array for a nested path). |
+| `$key` | `string\|int\|array` | The key to access (string/int for direct access, array for a nested path). |
 | `$default` | `mixed` | Optional default value to return if the key is not found |
 
 **Returns** `mixed` — Returns the value at the specified key, or the default value if provided and the key doesn't exist
@@ -1517,7 +1517,7 @@ $grouped = Arrays::groupBy($numbers, fn($n) => $n % 2);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to group. |
-| `$groupBy` | `callable|string` | The key name to group by, or a callback function that returns the group key. The callback has the signature `function (mixed $item, mixed $key): mixed` |
+| `$groupBy` | `callable\|string` | The key name to group by, or a callback function that returns the group key. The callback has the signature `function (mixed $item, mixed $key): mixed` |
 
 **Returns** `array` — Returns an associative array where keys are group identifiers and values are arrays of items belonging to each group
 
@@ -1570,7 +1570,7 @@ Arrays::has($data, ['settings', 'theme', 'font']);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to check for key existence |
-| `$key` | `string|int|array` | The key to check (string/int for simple key, array for nested path). |
+| `$key` | `string\|int\|array` | The key to check (string/int for simple key, array for nested path). |
 
 **Returns** `bool` — Returns true if the key exists, false otherwise
 
@@ -1604,7 +1604,7 @@ Arrays::insertAfter($array, 'missing', ['new' => 20]);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to insert into (passed by reference). |
-| `$key` | `string|int` | The reference key to insert after, or null to append |
+| `$key` | `string\|int` | The reference key to insert after, or null to append |
 | `$items` | `array` | Associative array of key-value pairs to insert |
 
 **See also**
@@ -1641,7 +1641,7 @@ Arrays::insertBefore($array, 'missing', ['new' => 5]);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to insert into (passed by reference). |
-| `$key` | `string|int` | The reference key to insert before, or null to prepend |
+| `$key` | `string\|int` | The reference key to insert before, or null to prepend |
 | `$items` | `array` | Associative array of key-value pairs to insert |
 
 **See also**
@@ -1713,7 +1713,7 @@ arrays or objects that cannot be converted to a string.
 | --- | --- | --- |
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
-| `$callback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$callback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns values present in all arrays with keys preserved from the first array
 
@@ -1800,8 +1800,8 @@ $result = Arrays::intersectAssoc(
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
 | `$comparator` | `ArrayComparator` | The comparator to use with the provided callback(s) (required with callbacks) |
-| `$firstCallback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
-| `$secondCallback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$firstCallback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$secondCallback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns key-value pairs present in all arrays
 
@@ -1859,7 +1859,7 @@ $result = Arrays::intersectKeys(
 | --- | --- | --- |
 | `$array` | `array` | The array to compare from. |
 | `...$arrays` | `array` | Arrays to compare against |
-| `$callback` | `callable|null` | Optional comparison function that returns <0, 0, or >0 |
+| `$callback` | `callable\|null` | Optional comparison function that returns <0, 0, or >0 |
 
 **Returns** `array` — Returns key-value pairs whose keys are found in all arrays
 
@@ -2050,7 +2050,7 @@ Arrays::iterate($data, function(&$value, $key) {
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$array` | `array|object` | The array or object to iterate over (passed by reference). For objects, only public properties are visited and values modified by reference are written back to the object. |
+| `$array` | `array\|object` | The array or object to iterate over (passed by reference). For objects, only public properties are visited and values modified by reference are written back to the object. |
 | `$callback` | `callable` | The function to apply to each element The callback has the signature `function (mixed $value, mixed $key): mixed` |
 | `$recursive` | `bool` | Whether to recursively process nested arrays (default: false) |
 | `$args` | `mixed` | Optional additional data to pass to the callback function |
@@ -3136,7 +3136,7 @@ Arrays::remove($data, ['config', 'database', 'port']);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to remove the key from (passed by reference) |
-| `$key` | `string|int|array` | The key to remove (string/int for simple key, array for nested path) |
+| `$key` | `string\|int\|array` | The key to remove (string/int for simple key, array for nested path) |
 
 ### `rename()`
 
@@ -3182,8 +3182,8 @@ Arrays::rename($data, 'missing', 'new');
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array containing the key to rename (passed by reference) |
-| `$oldKey` | `string|int|array` | The current key name (string/int for simple key, array for nested path) |
-| `$newKey` | `string|int` | The new key name |
+| `$oldKey` | `string\|int\|array` | The current key name (string/int for simple key, array for nested path) |
+| `$newKey` | `string\|int` | The new key name |
 
 **Throws**
 
@@ -3469,7 +3469,7 @@ $slice = Arrays::slice($data, 1, 1);
 | --- | --- | --- |
 | `$array` | `array` | The input array to extract from |
 | `$offset` | `int` | The starting position (negative counts from end) |
-| `$length` | `int|null` | Number of elements to extract (default: null for all remaining) |
+| `$length` | `int\|null` | Number of elements to extract (default: null for all remaining) |
 | `$preserveKeys` | `bool` | Whether to preserve numeric keys (default: false) |
 
 **Returns** `array` — Returns the extracted portion of the array
@@ -3566,7 +3566,7 @@ Arrays::sort($users, true, fn($a, $b) => strcmp($a->name, $b->name));
 | --- | --- | --- |
 | `$array` | `array` | The array to sort (passed by reference) |
 | `$reverse` | `bool` | Whether to sort in descending order (default: false) |
-| `$callback` | `callable|null` | Optional custom comparison function |
+| `$callback` | `callable\|null` | Optional custom comparison function |
 
 **Returns** `bool` — Returns true on success, false on failure
 
@@ -3627,7 +3627,7 @@ Arrays::sortAssoc($prices, true, fn($a, $b) => $a <=> $b);
 | --- | --- | --- |
 | `$array` | `array` | The array to sort (passed by reference) |
 | `$reverse` | `bool` | Whether to sort in descending order (default: false) |
-| `$callback` | `callable|null` | Optional custom comparison function for values |
+| `$callback` | `callable\|null` | Optional custom comparison function for values |
 
 **Returns** `bool` — Returns true on success, false on failure
 
@@ -3694,7 +3694,7 @@ Arrays::sortBy($words, fn($item) => strtolower($item));
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$array` | `array` | The array to sort (passed by reference) |
-| `$criteria` | `string|array|callable` | The key(s) to sort by, or a callback that returns the sort value - string: Single key name (e.g., 'age', 'name') - array: Multiple keys for multi-level sorting (e.g., ['age', 'name']) - callable: Function that receives ($item) and returns the sort value |
+| `$criteria` | `string\|array\|callable` | The key(s) to sort by, or a callback that returns the sort value - string: Single key name (e.g., 'age', 'name') - array: Multiple keys for multi-level sorting (e.g., ['age', 'name']) - callable: Function that receives ($item) and returns the sort value |
 | `$reverse` | `bool` | Whether to sort in descending order (default: false) |
 | `$flags` | `int` | Sort flags for natural sorting (optional, e.g., SORT_NATURAL) |
 
@@ -3756,7 +3756,7 @@ Arrays::sortKeys($numbers, false, fn($a, $b) => (int)$a - (int)$b);
 | --- | --- | --- |
 | `$array` | `array` | The array to sort by keys (passed by reference) |
 | `$reverse` | `bool` | Whether to sort in descending order (default: false) |
-| `$callback` | `callable|null` | Optional custom comparison function for keys |
+| `$callback` | `callable\|null` | Optional custom comparison function for keys |
 
 **Returns** `bool` — Returns true on success, false on failure
 
@@ -3843,7 +3843,7 @@ Arrays::splice($array, 2);
 | --- | --- | --- |
 | `$array` | `array` | The array to modify (passed by reference) |
 | `$offset` | `int` | The starting position (negative counts from end) |
-| `$length` | `int|null` | Number of elements to remove (default: null for all remaining) |
+| `$length` | `int\|null` | Number of elements to remove (default: null for all remaining) |
 | `$replacement` | `mixed` | Elements to insert at the offset position (default: empty array) |
 
 **Returns** `array` — Returns an array containing the removed elements

@@ -77,7 +77,7 @@ Files::chgrp('/path/to/directory', 1000);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$path` | `string` | The file or directory path |
-| `$group` | `string|int` | The new group name or numeric group ID |
+| `$group` | `string\|int` | The new group name or numeric group ID |
 
 **Throws**
 
@@ -138,7 +138,7 @@ Files::chown('/path/to/directory', 1000);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$path` | `string` | The file or directory path |
-| `$user` | `string|int` | The new owner name or numeric user ID |
+| `$user` | `string\|int` | The new owner name or numeric user ID |
 
 **Throws**
 
@@ -550,7 +550,7 @@ $phpAndMd = Files::find('/path/to/src', ['*.php', '*.md'], recursive: true);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$directory` | `string` | The directory to search in (default: '.') |
-| `$masks` | `string|array` | One or more glob patterns to match against (default: '*') |
+| `$masks` | `string\|array` | One or more glob patterns to match against (default: '*') |
 | `$recursive` | `bool` | Whether to search subdirectories (default: false) |
 
 **Returns** `array` — Array of file and directory paths matching the patterns
@@ -586,7 +586,7 @@ $srcDirs = Files::findDirectories('/path/to', 'src*', recursive: true);
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$directory` | `string` | The directory to search in (default: '.') |
-| `$masks` | `string|array` | One or more glob patterns to match against (default: '*') |
+| `$masks` | `string\|array` | One or more glob patterns to match against (default: '*') |
 | `$recursive` | `bool` | Whether to search subdirectories (default: false) |
 
 **Returns** `array` — Array of directory paths matching the patterns
@@ -622,7 +622,7 @@ $allCode = Files::findFiles('/path/to/project', ['*.php', '*.js'], recursive: tr
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$directory` | `string` | The directory to search in (default: '.') |
-| `$masks` | `string|array` | One or more glob patterns to match against (default: '*') |
+| `$masks` | `string\|array` | One or more glob patterns to match against (default: '*') |
 | `$recursive` | `bool` | Whether to search subdirectories (default: false) |
 
 **Returns** `array` — Array of file paths matching the patterns
@@ -1027,7 +1027,7 @@ $largeFiles = Files::listing('/path/to/dir', fn($path, $name) => filesize($path)
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$path` | `string` | The directory path to list |
-| `$filter` | `string|callable|null` | A glob pattern string, a callback function, or null for no filtering (default: null). The callback has the signature `function (string $fullPath, string $entryName): bool` |
+| `$filter` | `string\|callable\|null` | A glob pattern string, a callback function, or null for no filtering (default: null). The callback has the signature `function (string $fullPath, string $entryName): bool` |
 
 **Returns** `array` — Array of file and directory paths within the directory
 
@@ -1446,8 +1446,8 @@ Files::replaceInFile('/path/to/template.html', ['{{name}}', '{{email}}'], ['John
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `$path` | `string` | The file path to modify |
-| `$search` | `string|array` | The value or values to search for |
-| `$replace` | `string|array` | The replacement value or values |
+| `$search` | `string\|array` | The value or values to search for |
+| `$replace` | `string\|array` | The replacement value or values |
 
 **Throws**
 
@@ -1605,7 +1605,7 @@ Files::upload('document', '/uploads', null, [
 | --- | --- | --- |
 | `$key` | `string` | The form field name from the upload request |
 | `$destination` | `string` | The directory path where uploaded files should be saved |
-| `$files` | `array|null` | The files array to use (default: null, which uses $_FILES) |
+| `$files` | `array\|null` | The files array to use (default: null, which uses $_FILES) |
 | `$options` | `array` | Optional validation rules with keys: - `extensions`: `string[]` of allowed extensions without dots (e.g. `['jpg', 'png']`) - `mimeTypes`: `string[]` of allowed MIME types, checked against actual file content - `maxSize`: `int` maximum file size in bytes - `strict`: `bool` when true, throws on validation failure instead of skipping (default: false) |
 
 **Returns** `array|false` — A single file info array, an array of file info arrays for multiple uploads, or false on failure
@@ -1845,10 +1845,10 @@ Finds files and/or directories by type, matching the given masks.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$masks` | `string|array` | The glob patterns to match |
+| `$masks` | `string\|array` | The glob patterns to match |
 | `$directory` | `string` | The directory to search in |
 | `$recursive` | `bool` | Whether to search subdirectories |
-| `$type` | `string|null` | The type filter: 'file', 'dir', or null for both |
+| `$type` | `string\|null` | The type filter: 'file', 'dir', or null for both |
 
 **Returns** `array` — Array of matching paths
 

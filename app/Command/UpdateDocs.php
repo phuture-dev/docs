@@ -60,7 +60,7 @@ class UpdateDocs extends Command
     public static function run(?string $sourceFile = null): int
     {
         $sourceFile = $sourceFile ?? self::root() . self::SOURCE_FILE;
-        $entries = self::entries($sourceFile);
+        $entries = self::typedEntries($sourceFile);
 
         if ($entries === null) {
             return self::abort('Nothing could be read from ' . $sourceFile);

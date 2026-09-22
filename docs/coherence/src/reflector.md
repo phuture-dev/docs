@@ -49,7 +49,7 @@ $date = new DT();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to create an alias for, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to create an alias for, either as a class name string or an instance |
 | `$alias` | `string` | The new alias name for the class |
 
 **Returns** `bool` — Returns true if the alias was created successfully
@@ -155,7 +155,7 @@ $name = Reflector::basename(new \DateTime());
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to get the short name for, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to get the short name for, either as a class name string or an instance |
 
 **Returns** `string` — The short class name without namespace
 
@@ -193,7 +193,7 @@ $hasMethod = Reflector::hasMethod(\DateTime::class, 'nonExistent');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to check, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to check, either as a class name string or an instance |
 | `$method` | `string` | The method name to look for |
 
 **Returns** `bool` — Returns true if the method exists on the class, false otherwise
@@ -236,7 +236,7 @@ $hasProp = Reflector::hasProperty(User::class, 'email');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to check, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to check, either as a class name string or an instance |
 | `$property` | `string` | The property name to look for |
 
 **Returns** `bool` — Returns true if the property exists on the class, false otherwise
@@ -304,7 +304,7 @@ Reflector::isMethodPrivate(Service::class, 'internalProcess');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$method` | `string` | The method name to check |
 
 **Returns** `bool` — Returns true if the method is private, false otherwise
@@ -345,7 +345,7 @@ Reflector::isMethodProtected(Repository::class, 'findRaw');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$method` | `string` | The method name to check |
 
 **Returns** `bool` — Returns true if the method is protected, false otherwise
@@ -382,7 +382,7 @@ Reflector::isMethodPublic(\DateTime::class, 'format');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$method` | `string` | The method name to check |
 
 **Returns** `bool` — Returns true if the method is public, false otherwise
@@ -423,7 +423,7 @@ Reflector::isPropertyPrivate(User::class, 'password');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$property` | `string` | The property name to check |
 
 **Returns** `bool` — Returns true if the property is private, false otherwise
@@ -464,7 +464,7 @@ Reflector::isPropertyProtected(Model::class, 'attributes');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$property` | `string` | The property name to check |
 
 **Returns** `bool` — Returns true if the property is protected, false otherwise
@@ -505,7 +505,7 @@ Reflector::isPropertyPublic(User::class, 'name');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$property` | `string` | The property name to check |
 
 **Returns** `bool` — Returns true if the property is public, false otherwise
@@ -542,7 +542,7 @@ $methods = Reflector::methods(\DateTime::class);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 
 **Returns** `array` — An array of method names available on the class
 
@@ -589,7 +589,7 @@ Reflector::methodVisibility(Service::class, 'execute');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$method` | `string` | The method name to check |
 
 **Returns** `string` — The visibility as 'public', 'protected', or 'private'
@@ -629,7 +629,7 @@ $name = Reflector::name(new \Phuture\Coherence\Reflector());
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to get the name for, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to get the name for, either as a class name string or an instance |
 
 **Returns** `string` — The fully qualified class name of the object
 
@@ -667,7 +667,7 @@ $ns = Reflector::namespace(\DateTime::class);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to get the namespace for, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to get the namespace for, either as a class name string or an instance |
 
 **Returns** `string` — The namespace of the class, or an empty string for global namespace classes
 
@@ -741,7 +741,7 @@ $parent = Reflector::parent(\stdClass::class);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to get the parent for, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to get the parent for, either as a class name string or an instance |
 
 **Returns** `string` — The fully qualified class name of the parent class
 
@@ -781,7 +781,7 @@ $props = Reflector::properties(User::class);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 
 **Returns** `array` — An associative array of property names and their default values
 
@@ -828,7 +828,7 @@ Reflector::propertyVisibility(Config::class, 'apiKey');
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 | `$property` | `string` | The property name to check |
 
 **Returns** `string` — The visibility as 'public', 'protected', or 'private'
@@ -866,7 +866,7 @@ $properties = $reflection->getProperties();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to reflect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to reflect, either as a class name string or an instance |
 
 **Returns** `ReflectionClass` — A reflection object for the given class
 
@@ -905,7 +905,7 @@ $cases = $reflection->getCases();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$enum` | `object|string` | The enum to reflect, either as a class name string or an enum instance |
+| `$enum` | `object\|string` | The enum to reflect, either as a class name string or an enum instance |
 
 **Returns** `ReflectionEnum` — A reflection object for the given enum
 
@@ -974,7 +974,7 @@ $params = $reflection->getParameters();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class containing the method, either as a class name string or an instance |
+| `$class` | `object\|string` | The class containing the method, either as a class name string or an instance |
 | `$method` | `string` | The method name to reflect |
 
 **Returns** `ReflectionMethod` — A reflection object for the given method
@@ -1010,7 +1010,7 @@ $hasDefault = $reflection->isDefaultValueAvailable();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class containing the method, either as a class name string or an instance |
+| `$class` | `object\|string` | The class containing the method, either as a class name string or an instance |
 | `$method` | `string` | The method name containing the parameter |
 | `$parameter` | `string` | The parameter name to reflect |
 
@@ -1051,7 +1051,7 @@ $isPublic = $reflection->isPublic();
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class containing the property, either as a class name string or an instance |
+| `$class` | `object\|string` | The class containing the property, either as a class name string or an instance |
 | `$property` | `string` | The property name to reflect |
 
 **Returns** `ReflectionProperty` — A reflection object for the given property
@@ -1095,7 +1095,7 @@ $traits = Reflector::traits(Model::class);
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$class` | `object|string` | The class to inspect, either as a class name string or an instance |
+| `$class` | `object\|string` | The class to inspect, either as a class name string or an instance |
 
 **Returns** `array` — An associative array of trait names used by the class
 

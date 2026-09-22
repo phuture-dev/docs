@@ -84,14 +84,28 @@ class ReferenceTest extends TestCase
 
     public function testPageWritesParametersAsATable(): void
     {
-        $doc = "    /**\n     * @param string \$name The name | its pipe\n     * @param int ...\$rest The rest\n     */\n";
-        $page = $this->page('', $doc . "    public function run(string \$name, int ...\$rest): void\n    {\n    }\n");
+        $doc = "    /**\n     * @param string \$name The name | its pipe\n     * @param int ...\$rest The rest\n"
+            . "     * @param \\DateTimeImmutable|string \$date When it happened\n     */\n";
+        $page = $this->page(
+            '',
+            $doc . "    public function run(string \$name, int ...\$rest): void\n    {\n    }\n"
+        );
 
         Assert::contains("| Parameter | Type | Description |\n| --- | --- | --- |", $page);
 
         // A pipe would open a column of its own, so it is written as itself instead
         Assert::contains('| `$name` | `string` | The name \| its pipe |', $page);
         Assert::contains('| `...$rest` | `int` | The rest |', $page);
+
+        // A union type carries that same pipe, and the cell holding it is no different
+        Assert::contains('| `$date` | `\DateTimeImmutable\|string` | When it happened |', $page);
+
+        // Three columns, however many pipes were written into them
+        foreach (explode("\n", $page) as $line) {
+            if (str_starts_with($line, '| `')) {
+                Assert::same(3, count(preg_split('/(?<!\\\\)\|/', trim($line, '|')) ?: []));
+            }
+        }
     }
 
     public function testPageWritesWhatAMemberHandsBackAndThrows(): void
@@ -101,6 +115,13 @@ class ReferenceTest extends TestCase
         $page = $this->page('', $doc . "    public function run(): bool\n    {\n    }\n");
 
         Assert::contains('**Returns** `bool` — Whether it worked', $page);
+
+        // Outside a table there is no cell to end, so a union type is written as it was
+        Assert::contains(
+            '**Returns** `bool|null`',
+            $this->page('', "    /**\n     * @return bool|null Whether it worked\n     */\n"
+                . "    public function maybe(): ?bool\n    {\n    }\n")
+        );
         Assert::contains("**Throws**\n\n- `\\RuntimeException` — When it did not", $page);
 
         // A tag with nothing to say past its type is written as the type alone, with no dash left dangling

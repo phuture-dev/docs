@@ -3,7 +3,7 @@
 `Phuture\Coherence\Interface\Arrayable`
 
 ```php
-interface Arrayable
+interface Arrayable extends ArrayAccess
 ```
 
 Interface for objects that can be converted to arrays.

@@ -33,6 +33,16 @@ $formatted = Dates::toDateTime(
 
 ## Methods
 
+### `__toString()`
+
+```php
+public function __toString(): string
+```
+
+Returns the string representation of the wrapped date/time value.
+
+**Returns** `string` — The date and time formatted as 'Y-m-d H:i:s'
+
 ### `addDays()`
 
 ```php
@@ -491,7 +501,7 @@ Returns a human-readable string describing how far the wrapped date is from a re
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$comparedTo` | `DateTimeImmutable|string|null` | The reference date/time to compare against. Pass null to use the current moment (default: null) |
+| `$comparedTo` | `DateTimeImmutable\|string\|null` | The reference date/time to compare against. Pass null to use the current moment (default: null) |
 
 **Returns** `string` — A human-readable relative time string (e.g. '2 days ago', 'in 3 hours')
 
@@ -582,6 +592,20 @@ Returns the wrapped date/time formatted as an RFC 850 string.
 **See also**
 
 - `\Phuture\Coherence\Dates::toRfc850()`
+
+### `toString()`
+
+```php
+public function toString(): string
+```
+
+Returns the wrapped date/time formatted as a string.
+
+**Returns** `string` — The date and time formatted as 'Y-m-d H:i:s'
+
+**See also**
+
+- `\Phuture\Coherence\Dates::toDateTime()`
 
 ### `toTime()`
 

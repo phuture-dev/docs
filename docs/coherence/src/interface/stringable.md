@@ -3,7 +3,7 @@
 `Phuture\Coherence\Interface\Stringable`
 
 ```php
-interface Stringable
+interface Stringable extends \Stringable
 ```
 
 Interface for objects that can be converted to strings.

@@ -58,7 +58,7 @@ Changes the group ownership of the wrapped file.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$group` | `string|int` | The new group name or numeric group ID |
+| `$group` | `string\|int` | The new group name or numeric group ID |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -102,7 +102,7 @@ Changes the owner of the wrapped file.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$user` | `string|int` | The new owner name or numeric user ID |
+| `$user` | `string\|int` | The new owner name or numeric user ID |
 
 **Returns** `self` — Returns the current instance for method chaining
 
@@ -434,8 +434,8 @@ Replaces all occurrences of a search string within the wrapped file.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `$search` | `string|array` | The value or values to search for |
-| `$replace` | `string|array` | The replacement value or values |
+| `$search` | `string\|array` | The value or values to search for |
+| `$replace` | `string\|array` | The replacement value or values |
 
 **Returns** `self` — Returns the current instance for method chaining
 

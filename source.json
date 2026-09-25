@@ -1,4 +1,5 @@
-[{
+[
+    {
         "source": "https://raw.githubusercontent.com/phuture-dev/coherence/refs/heads/main/WORKFLOW.md",
         "destination": "/",
         "type": "doc"
